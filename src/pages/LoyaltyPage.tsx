@@ -19,7 +19,7 @@ export const LoyaltyPage: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-6 overflow-y-auto max-w-7xl mx-auto">
+    <div className="p-4 md:p-6 space-y-6 overflow-y-auto max-w-7xl mx-auto pb-28">
       {/* Header */}
       <div>
         <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
@@ -129,38 +129,40 @@ export const LoyaltyPage: React.FC = () => {
         <div className="p-4 border-b border-[#1E2638] font-bold text-xs uppercase text-slate-400">
           Customer Points Roster
         </div>
-        <table className="w-full text-xs text-left">
-          <thead className="bg-[#0B0E14] text-slate-400 font-semibold uppercase text-[10px]">
-            <tr>
-              <th className="p-3">Customer</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Total Spent</th>
-              <th className="p-3">Loyalty Tier</th>
-              <th className="p-3">Active Points Balance</th>
-              <th className="p-3">Cash Redemption Value</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#1E2638] text-slate-200">
-            {customers.map(c => (
-              <tr key={c.id} className="hover:bg-[#161C2C]/50 transition">
-                <td className="p-3 font-semibold text-white">{c.name}</td>
-                <td className="p-3 text-slate-400">{c.group}</td>
-                <td className="p-3 font-mono">Rs. {c.totalPurchases.toLocaleString()}</td>
-                <td className="p-3">
-                  <span className="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-amber-950 text-amber-300 border border-amber-800/40">
-                    {c.loyaltyTier}
-                  </span>
-                </td>
-                <td className="p-3 font-mono font-bold text-amber-400">
-                  {c.loyaltyPoints} Points
-                </td>
-                <td className="p-3 font-mono font-bold text-emerald-400">
-                  Rs. {(c.loyaltyPoints * redeemRate).toLocaleString()}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs text-left">
+            <thead className="bg-[#0B0E14] text-slate-400 font-semibold uppercase text-[10px]">
+              <tr>
+                <th className="p-3">Customer</th>
+                <th className="p-3">Category</th>
+                <th className="p-3">Total Spent</th>
+                <th className="p-3">Loyalty Tier</th>
+                <th className="p-3">Active Points Balance</th>
+                <th className="p-3">Cash Redemption Value</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-[#1E2638] text-slate-200">
+              {customers.map(c => (
+                <tr key={c.id} className="hover:bg-[#161C2C]/50 transition">
+                  <td className="p-3 font-semibold text-white">{c.name}</td>
+                  <td className="p-3 text-slate-400">{c.group}</td>
+                  <td className="p-3 font-mono">Rs. {c.totalPurchases.toLocaleString()}</td>
+                  <td className="p-3">
+                    <span className="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-amber-950 text-amber-300 border border-amber-800/40">
+                      {c.loyaltyTier}
+                    </span>
+                  </td>
+                  <td className="p-3 font-mono font-bold text-amber-400">
+                    {c.loyaltyPoints} Points
+                  </td>
+                  <td className="p-3 font-mono font-bold text-emerald-400">
+                    Rs. {(c.loyaltyPoints * redeemRate).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

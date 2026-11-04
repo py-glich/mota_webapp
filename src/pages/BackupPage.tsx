@@ -68,11 +68,11 @@ export const BackupPage: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-6 overflow-y-auto max-w-7xl mx-auto">
+    <div className="p-3 sm:p-5 md:p-6 space-y-6 max-w-7xl mx-auto pb-24">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-          <Database className="w-5 h-5 text-brand-600" />
+        <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
+          <Database className="w-5 h-5 text-rose-500" />
           Backup & Data Protection Console
         </h1>
         <p className="text-xs text-slate-500">

@@ -228,6 +228,29 @@ const salesReturnSchema = new Schema({
   createdAt: { type: String, required: true }
 }, { timestamps: true });
 
+// 12b. Purchase Return Schema
+const purchaseReturnSchema = new Schema({
+  id: { type: String, required: true, unique: true },
+  returnNumber: { type: String, required: true, unique: true },
+  purchaseId: { type: String },
+  purchaseInvoiceNumber: { type: String },
+  supplierId: { type: String, required: true },
+  supplierName: { type: String, required: true },
+  returnedItems: [{
+    productId: { type: String, required: true },
+    productName: { type: String, required: true },
+    quantity: { type: Number, required: true },
+    purchasePrice: { type: Number, required: true },
+    total: { type: Number, required: true },
+    reason: { type: String }
+  }],
+  totalRefundAmount: { type: Number, required: true },
+  refundMethod: { type: String, default: 'supplier_ledger' },
+  returnReason: { type: String },
+  authorizedBy: { type: String, required: true },
+  createdAt: { type: String, required: true }
+}, { timestamps: true });
+
 // 13. Quotation Schema
 const quotationSchema = new Schema({
   id: { type: String, required: true, unique: true },
@@ -362,6 +385,7 @@ export const CashbookModel = mongoose.models.Cashbook || mongoose.model('Cashboo
 export const StockAdjustmentModel = mongoose.models.StockAdjustment || mongoose.model('StockAdjustment', stockAdjustmentSchema);
 export const DamagedStockModel = mongoose.models.DamagedStock || mongoose.model('DamagedStock', damagedStockSchema);
 export const SalesReturnModel = mongoose.models.SalesReturn || mongoose.model('SalesReturn', salesReturnSchema);
+export const PurchaseReturnModel = mongoose.models.PurchaseReturn || mongoose.model('PurchaseReturn', purchaseReturnSchema);
 export const QuotationModel = mongoose.models.Quotation || mongoose.model('Quotation', quotationSchema);
 export const CampaignModel = mongoose.models.Campaign || mongoose.model('Campaign', campaignSchema);
 export const ShiftClosingModel = mongoose.models.ShiftClosing || mongoose.model('ShiftClosing', shiftClosingSchema);

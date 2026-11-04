@@ -3,7 +3,8 @@ import {
   Product, Category, Brand, SalesInvoice, PurchaseInvoice, 
   Customer, Supplier, StockAdjustment, DamagedStockRecord, 
   StockMovement, SalesReturn, Quotation, CashbookEntry, 
-  ExpenseRecord, AuditLog, MarketingCampaign, ShiftClosing
+  ExpenseRecord, AuditLog, MarketingCampaign, ShiftClosing,
+  PurchaseReturn, SmsGatewayConfig, SmsLogEntry
 } from '../types';
 import { 
   INITIAL_PRODUCTS, INITIAL_CATEGORIES, INITIAL_BRANDS, 
@@ -35,10 +36,13 @@ interface AppContextType {
   damagedStock: DamagedStockRecord[];
   stockMovements: StockMovement[];
   salesReturns: SalesReturn[];
+  purchaseReturns: PurchaseReturn[];
   quotations: Quotation[];
   auditLogs: AuditLog[];
   campaigns: MarketingCampaign[];
   shiftClosings: ShiftClosing[];
+  smsLogs: SmsLogEntry[];
+  smsGatewayConfig: SmsGatewayConfig;
   dbStatus: DatabaseStatus;
   
   // Product actions
@@ -62,6 +66,12 @@ interface AppContextType {
 
   // Returns actions
   processSalesReturn: (returnRecord: Omit<SalesReturn, 'id' | 'returnNumber' | 'createdAt'>) => void;
+  processPurchaseReturn: (retData: Omit<PurchaseReturn, 'id' | 'returnNumber' | 'createdAt'>) => PurchaseReturn;
+
+  // SMS Marketing actions
+  sendSms: (recipientPhone: string, recipientName: string, message: string, templateType?: any, customerId?: string) => Promise<{ success: boolean; message: string }>;
+  broadcastSmsCampaign: (targetGroup: string, message: string, title: string) => Promise<{ success: boolean; count: number }>;
+  updateSmsGatewayConfig: (newConfig: Partial<SmsGatewayConfig>) => void;
 
   // Customer actions
   addCustomer: (customer: Omit<Customer, 'id' | 'totalPurchases' | 'loyaltyPoints'>) => Customer;
@@ -164,6 +174,76 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return s ? JSON.parse(s) : [];
   });
 
+  const [purchaseReturns, setPurchaseReturns] = useState<PurchaseReturn[]>(() => {
+    const s = localStorage.getItem('cyberorion_purchase_returns');
+    if (s) return JSON.parse(s);
+    return [
+      {
+        id: 'PR-2026-0001',
+        returnNumber: 'PR-2026-0001',
+        purchaseInvoiceNumber: 'PO-2026-0045',
+        supplierId: 'SUP-01',
+        supplierName: 'Atlas Honda Authorized Spares Central Depot',
+        returnedItems: [
+          {
+            productId: 'PROD-01',
+            productName: 'Genuine Honda CD70 Piston Kit Standard (0.00)',
+            quantity: 3,
+            purchasePrice: 1650,
+            total: 4950,
+            reason: 'Factory defective piston ring clearance'
+          }
+        ],
+        totalRefundAmount: 4950,
+        refundMethod: 'supplier_ledger',
+        returnReason: 'Defective batch with irregular ring groove tolerances',
+        authorizedBy: 'Faizan Ilyas',
+        createdAt: '2026-11-02 14:30'
+      }
+    ];
+  });
+
+  const [smsGatewayConfig, setSmsGatewayConfig] = useState<SmsGatewayConfig>(() => {
+    const s = localStorage.getItem('cyberorion_sms_gateway');
+    return s ? JSON.parse(s) : {
+      provider: 'brand_sms',
+      senderId: 'MOTOPRO',
+      apiKey: 'pk_live_moto_sms_981273948',
+      creditsRemaining: 3450,
+      status: 'active'
+    };
+  });
+
+  const [smsLogs, setSmsLogs] = useState<SmsLogEntry[]>(() => {
+    const s = localStorage.getItem('cyberorion_sms_logs');
+    return s ? JSON.parse(s) : [
+      {
+        id: 'SMS-101',
+        customerId: 'CUST-002',
+        customerName: 'Ustad Akram Auto Workshop',
+        phoneNumber: '+92 301 7654321',
+        message: 'محترم استاد اکرم صاحب! سائبر اورین موٹرسائیکل آٹو پارٹس کی طرف سے آپ کے کھاتے کا بقایا بیلنس Rs. 14,200 ہے۔ برائے مہربانی اس ہفتے اپنا کھاتہ کلیئر کروائیں۔ شکریہ!',
+        templateType: 'payment_reminder',
+        characterCount: 154,
+        smsUnits: 1,
+        status: 'delivered',
+        timestamp: '2026-11-04 09:15'
+      },
+      {
+        id: 'SMS-102',
+        customerId: 'CUST-004',
+        customerName: 'Tariq Autos & Service',
+        phoneNumber: '+92 300 4567890',
+        message: 'معزز گاہک! سائبر اورین پر اٹلس ہونڈا اور یاماہا کے نئے اوریجنل اسپیئر پارٹس کی تازہ کھیپ پہنچ چکی ہے۔ خصوصی ہول سیل ریٹس پر دستیاب ہے۔',
+        templateType: 'parts_arrival',
+        characterCount: 135,
+        smsUnits: 1,
+        status: 'delivered',
+        timestamp: '2026-11-03 16:40'
+      }
+    ];
+  });
+
   const [quotations, setQuotations] = useState<Quotation[]>(() => {
     const s = localStorage.getItem('cyberorion_quotations');
     return s ? JSON.parse(s) : INITIAL_QUOTATIONS;
@@ -208,6 +288,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (data.stockAdjustments) setStockAdjustments(data.stockAdjustments);
       if (data.damagedStock) setDamagedStock(data.damagedStock);
       if (data.salesReturns) setSalesReturns(data.salesReturns);
+      if (data.purchaseReturns && Array.isArray(data.purchaseReturns)) setPurchaseReturns(data.purchaseReturns);
+      if (data.smsLogs && Array.isArray(data.smsLogs)) setSmsLogs(data.smsLogs);
+      if (data.smsGatewayConfig) setSmsGatewayConfig(data.smsGatewayConfig);
       if (data.quotations && Array.isArray(data.quotations)) setQuotations(data.quotations);
       if (data.auditLogs && Array.isArray(data.auditLogs)) setAuditLogs(data.auditLogs);
       if (data.campaigns && Array.isArray(data.campaigns)) setCampaigns(data.campaigns);
@@ -247,6 +330,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => { localStorage.setItem('cyberorion_damaged_stock', JSON.stringify(damagedStock)); }, [damagedStock]);
   useEffect(() => { localStorage.setItem('cyberorion_stock_mov', JSON.stringify(stockMovements)); }, [stockMovements]);
   useEffect(() => { localStorage.setItem('cyberorion_sales_returns', JSON.stringify(salesReturns)); }, [salesReturns]);
+  useEffect(() => { localStorage.setItem('cyberorion_purchase_returns', JSON.stringify(purchaseReturns)); }, [purchaseReturns]);
+  useEffect(() => { localStorage.setItem('cyberorion_sms_gateway', JSON.stringify(smsGatewayConfig)); }, [smsGatewayConfig]);
+  useEffect(() => { localStorage.setItem('cyberorion_sms_logs', JSON.stringify(smsLogs)); }, [smsLogs]);
   useEffect(() => { localStorage.setItem('cyberorion_quotations', JSON.stringify(quotations)); }, [quotations]);
   useEffect(() => { localStorage.setItem('cyberorion_audit_logs', JSON.stringify(auditLogs)); }, [auditLogs]);
   useEffect(() => { localStorage.setItem('cyberorion_campaigns', JSON.stringify(campaigns)); }, [campaigns]);
@@ -709,6 +795,180 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     logAudit('Returns', 'Sales Return Processed', `Return ${returnNumber} processed for invoice ${newReturn.invoiceNumber} amount: Rs. ${newReturn.totalRefundAmount}`);
   };
 
+  const processPurchaseReturn = (retData: Omit<PurchaseReturn, 'id' | 'returnNumber' | 'createdAt'>): PurchaseReturn => {
+    const returnNumber = `PR-2026-${String(purchaseReturns.length + 1).padStart(4, '0')}`;
+    const newReturn: PurchaseReturn = {
+      ...retData,
+      id: returnNumber,
+      returnNumber,
+      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
+    };
+
+    setPurchaseReturns(prev => [newReturn, ...prev]);
+
+    // 1. Deduct stock from inventory (items return back to supplier)
+    newReturn.returnedItems.forEach(item => {
+      setProducts(prev => prev.map(p => p.id === item.productId ? {
+        ...p,
+        currentStock: Math.max(0, p.currentStock - item.quantity)
+      } : p));
+
+      const movement: StockMovement = {
+        id: `MOV-${Date.now()}-${item.productId}`,
+        productId: item.productId,
+        productName: item.productName,
+        type: 'return_out',
+        quantityChange: -item.quantity,
+        stockAfter: 0,
+        referenceNumber: returnNumber,
+        performedBy: currentUser?.name || 'Authorized User',
+        timestamp: newReturn.createdAt
+      };
+      setStockMovements(prev => [movement, ...prev]);
+    });
+
+    // 2. Adjust supplier balance or counter cash
+    if (newReturn.refundMethod === 'supplier_ledger' && newReturn.supplierId) {
+      setSuppliers(prev => prev.map(s => s.id === newReturn.supplierId ? {
+        ...s,
+        payableBalance: Math.max(0, s.payableBalance - newReturn.totalRefundAmount)
+      } : s));
+    } else if (newReturn.refundMethod === 'cash') {
+      updateCounterCash(currentCounter.id, newReturn.totalRefundAmount);
+      const cbEntry: CashbookEntry = {
+        id: `CB-${Date.now()}`,
+        counterId: currentCounter.id,
+        date: newReturn.createdAt,
+        type: 'in',
+        category: 'Supplier Refund',
+        amount: newReturn.totalRefundAmount,
+        description: `Cash refund from Supplier Return ${newReturn.returnNumber} (${newReturn.supplierName})`,
+        referenceId: newReturn.returnNumber,
+        performedBy: currentUser?.name || 'Authorized User'
+      };
+      setCashbook(prev => [cbEntry, ...prev]);
+    }
+
+    logAudit('Purchases', 'Purchase Return Processed', `Purchase Return ${returnNumber} to ${newReturn.supplierName} amount: Rs. ${newReturn.totalRefundAmount}`);
+
+    // Send to backend API
+    fetch('/api/purchase-returns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newReturn)
+    }).catch(e => console.error(e));
+
+    return newReturn;
+  };
+
+  // SMS Marketing
+  const sendSms = async (
+    recipientPhone: string,
+    recipientName: string,
+    message: string,
+    templateType: any = 'custom',
+    customerId?: string
+  ): Promise<{ success: boolean; message: string }> => {
+    const chars = message.length;
+    const units = Math.ceil(chars / 160) || 1;
+    const newEntry: SmsLogEntry = {
+      id: `SMS-${Date.now()}`,
+      customerId,
+      customerName: recipientName,
+      phoneNumber: recipientPhone,
+      message,
+      templateType,
+      characterCount: chars,
+      smsUnits: units,
+      status: 'delivered',
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
+    };
+
+    setSmsLogs(prev => [newEntry, ...prev]);
+    setSmsGatewayConfig(prev => ({
+      ...prev,
+      creditsRemaining: Math.max(0, prev.creditsRemaining - units)
+    }));
+
+    logAudit('Marketing', 'SMS Sent', `Sent ${units} SMS unit(s) to ${recipientName} (${recipientPhone})`);
+
+    try {
+      await fetch('/api/sms/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipientPhone, recipientName, message, templateType, customerId })
+      });
+    } catch (e) {
+      console.warn('Offline mode for SMS send');
+    }
+
+    return { success: true, message: `SMS sent successfully to ${recipientPhone}` };
+  };
+
+  const broadcastSmsCampaign = async (
+    targetGroup: string,
+    message: string,
+    title: string
+  ): Promise<{ success: boolean; count: number }> => {
+    let target = customers;
+    if (targetGroup === 'mechanic') {
+      target = customers.filter(c => c.group === 'Mechanic');
+    } else if (targetGroup === 'debtor') {
+      target = customers.filter(c => c.receivableBalance > 0);
+    }
+
+    const unitsPerMsg = Math.ceil(message.length / 160) || 1;
+    const totalUnits = target.length * unitsPerMsg;
+
+    const newEntries: SmsLogEntry[] = target.map(c => {
+      const personalized = message
+        .replace('{customer_name}', c.name)
+        .replace('{due_amount}', c.receivableBalance ? c.receivableBalance.toLocaleString() : '0');
+
+      return {
+        id: `SMS-${Date.now()}-${c.id}`,
+        customerId: c.id,
+        customerName: c.name,
+        phoneNumber: c.phone,
+        message: personalized,
+        templateType: 'offer',
+        characterCount: personalized.length,
+        smsUnits: unitsPerMsg,
+        status: 'delivered',
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
+      };
+    });
+
+    setSmsLogs(prev => [...newEntries, ...prev]);
+    setSmsGatewayConfig(prev => ({
+      ...prev,
+      creditsRemaining: Math.max(0, prev.creditsRemaining - totalUnits)
+    }));
+
+    logAudit('Marketing', 'Bulk SMS Broadcast', `Broadcast campaign "${title}" to ${target.length} recipients`);
+
+    try {
+      await fetch('/api/sms/broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetGroup, message, title })
+      });
+    } catch (e) {
+      console.warn('Offline mode for SMS broadcast');
+    }
+
+    return { success: true, count: target.length };
+  };
+
+  const updateSmsGatewayConfig = (newConfig: Partial<SmsGatewayConfig>) => {
+    setSmsGatewayConfig(prev => ({ ...prev, ...newConfig }));
+    fetch('/api/sms/gateway', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newConfig)
+    }).catch(e => console.error(e));
+  };
+
   // 6. CUSTOMER MANAGEMENT
   const addCustomer = (c: Omit<Customer, 'id' | 'totalPurchases' | 'loyaltyPoints'>): Customer => {
     const newId = `CUST-${String(customers.length + 1).padStart(3, '0')}`;
@@ -959,10 +1219,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       damagedStock,
       stockMovements,
       salesReturns,
+      purchaseReturns,
       quotations,
       auditLogs,
       campaigns,
       shiftClosings,
+      smsLogs,
+      smsGatewayConfig,
       dbStatus,
       refreshFromDatabase,
       bulkImportProducts,
@@ -978,6 +1241,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       voidSalesInvoice,
       createPurchaseInvoice,
       processSalesReturn,
+      processPurchaseReturn,
+      sendSms,
+      broadcastSmsCampaign,
+      updateSmsGatewayConfig,
       addCustomer,
       updateCustomer,
       recordCustomerPayment,

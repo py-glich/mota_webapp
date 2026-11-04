@@ -4,7 +4,7 @@ import { getDb, updateDb, resetDb, initMongo, mongoStatus, seedMongoFromData, Ap
 import { 
   Product, SalesInvoice, PurchaseInvoice, Customer, Supplier, 
   ExpenseRecord, CashbookEntry, StockAdjustment, DamagedStockRecord, 
-  Quotation, SalesReturn, ShiftClosing, AuditLog, User, MarketingCampaign 
+  Quotation, SalesReturn, PurchaseReturn, ShiftClosing, AuditLog, User, MarketingCampaign 
 } from '../src/types/index';
 
 const app = express();
@@ -525,6 +525,61 @@ app.post('/api/returns', (req: Request, res: Response) => {
   res.status(201).json(newReturn);
 });
 
+// 2.6 PURCHASE RETURN MANAGEMENT (Supplier Returns)
+app.get('/api/purchase-returns', (req: Request, res: Response) => {
+  const db = getDb();
+  res.json((db as any).purchaseReturns || []);
+});
+
+app.post('/api/purchase-returns', (req: Request, res: Response) => {
+  const retData = req.body;
+  const newReturn = updateDb(db => {
+    if (!(db as any).purchaseReturns) (db as any).purchaseReturns = [];
+    const nextSeq = (db as any).purchaseReturns.length + 1;
+    const returnNumber = retData.returnNumber || `PR-2026-${String(nextSeq).padStart(4, '0')}`;
+    const createdAt = retData.createdAt || new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+    const fullReturn: PurchaseReturn = {
+      ...retData,
+      id: returnNumber,
+      returnNumber,
+      createdAt
+    };
+
+    (db as any).purchaseReturns.unshift(fullReturn);
+
+    // 1. Deduct stock for returned products (inventory returned to supplier)
+    if (fullReturn.returnedItems && Array.isArray(fullReturn.returnedItems)) {
+      fullReturn.returnedItems.forEach(item => {
+        const prod = db.products.find(p => p.id === item.productId);
+        if (prod) {
+          prod.currentStock = Math.max(0, prod.currentStock - item.quantity);
+        }
+      });
+    }
+
+    // 2. Adjust supplier payable balance if refundMethod is supplier_ledger
+    if (fullReturn.refundMethod === 'supplier_ledger' && fullReturn.supplierId) {
+      const sup = db.suppliers.find(s => s.id === fullReturn.supplierId);
+      if (sup) {
+        sup.payableBalance = Math.max(0, sup.payableBalance - fullReturn.totalRefundAmount);
+      }
+    }
+
+    logServerAudit(
+      db,
+      'Purchases',
+      'Purchase Return Processed',
+      `Processed purchase return ${returnNumber} to supplier ${fullReturn.supplierName} for Rs. ${fullReturn.totalRefundAmount}`,
+      { name: fullReturn.authorizedBy || 'Manager', role: 'manager' }
+    );
+
+    return fullReturn;
+  });
+
+  res.status(201).json(newReturn);
+});
+
 // ---------------------------------------------------------------------------
 // 3. PURCHASES & INWARD STOCK
 // ---------------------------------------------------------------------------
@@ -835,11 +890,143 @@ app.put('/api/quotations/:id/status', (req: Request, res: Response) => {
 });
 
 // ---------------------------------------------------------------------------
-// 8. USERS, PERMISSIONS & MANAGER PIN VERIFICATION
+// 8. USERS, AUTHENTICATION & PERMISSIONS
 // ---------------------------------------------------------------------------
 app.get('/api/users', (req: Request, res: Response) => {
   const db = getDb();
   res.json(db.users);
+});
+
+// Auth: Register New Account
+app.post('/api/auth/register', (req: Request, res: Response) => {
+  const { name, username, email, password, role, counterId, phone, avatar } = req.body;
+  if (!name || !username || !password) {
+    return res.status(400).json({ success: false, message: 'Name, Username, and Password are required.' });
+  }
+
+  const cleanUsername = username.trim().toLowerCase();
+  const db = getDb();
+  const existing = db.users.find(u => u.username.toLowerCase() === cleanUsername || (email && u.email?.toLowerCase() === email.trim().toLowerCase()));
+  if (existing) {
+    return res.status(400).json({ success: false, message: 'Username or email already registered. Please choose another or sign in.' });
+  }
+
+  const defaultRole = (role as any) || 'cashier';
+  const newId = `USR-${Date.now().toString().slice(-4)}`;
+  const newUser: User = {
+    id: newId,
+    name: name.trim(),
+    username: cleanUsername,
+    email: email?.trim() || `${cleanUsername}@motopro.local`,
+    password: password.trim(),
+    role: defaultRole,
+    counterId: counterId || (defaultRole === 'cashier' ? 'CTR-1' : undefined),
+    active: true,
+    phone: phone || '+92 300 0000000',
+    avatar: avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+    lastLogin: new Date().toISOString().replace('T', ' ').substring(0, 19),
+    permissions: {
+      canViewPurchasePrice: true,
+      canViewProfit: true,
+      canOverridePrice: defaultRole !== 'storekeeper',
+      canApplyCustomDiscount: defaultRole !== 'storekeeper',
+      maxDiscountPercent: defaultRole === 'owner' ? 50 : 25,
+      canVoidInvoice: defaultRole !== 'storekeeper',
+      canEditInvoice: true,
+      canAdjustStock: true,
+      canViewFinancials: true,
+      canManageUsers: defaultRole === 'owner',
+      canManageBackups: defaultRole === 'owner',
+      canApproveReturns: true,
+      canCashierRegisterCustomers: true,
+      canCashierReceivePayments: true,
+      canCashierCreateQuotes: true,
+      canCashierFlagDamaged: true,
+      canCashierCloseShift: true,
+    }
+  };
+
+  updateDb(d => {
+    d.users.unshift(newUser);
+    logServerAudit(d, 'Users', 'User Registered', `New user registered: ${newUser.name} (@${newUser.username}, Role: ${newUser.role})`, { name: newUser.name, role: newUser.role });
+    return newUser;
+  });
+
+  res.status(201).json({ success: true, message: 'Account registered successfully!', user: newUser });
+});
+
+// Auth: Login
+app.post('/api/auth/login', (req: Request, res: Response) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Please provide both username and password.' });
+  }
+
+  const query = username.trim().toLowerCase();
+  const db = getDb();
+  const user = db.users.find(u => 
+    u.username.toLowerCase() === query || 
+    (u.email && u.email.toLowerCase() === query)
+  );
+
+  if (!user) {
+    return res.status(401).json({ success: false, message: 'Account not found. Please check your username/email or sign up.' });
+  }
+
+  if (!user.active) {
+    return res.status(403).json({ success: false, message: 'This account has been deactivated. Please contact the owner.' });
+  }
+
+  // Password verification
+  const validPass = user.password ? user.password === password.trim() : (password.trim() === 'password123' || password.trim() === '123456');
+  if (!validPass) {
+    return res.status(401).json({ success: false, message: 'Incorrect password. Please try again.' });
+  }
+
+  // Update lastLogin
+  updateDb(d => {
+    const u = d.users.find(item => item.id === user.id);
+    if (u) {
+      u.lastLogin = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    }
+    logServerAudit(d, 'Users', 'User Login', `${user.name} logged in successfully`, { name: user.name, role: user.role });
+  });
+
+  res.json({ success: true, message: 'Login successful!', user });
+});
+
+// Auth: Profile & Password Management
+app.put('/api/auth/profile', (req: Request, res: Response) => {
+  const { userId, name, email, phone, avatar, currentPassword, newPassword } = req.body;
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'User ID is required.' });
+  }
+
+  const result = updateDb(db => {
+    const u = db.users.find(item => item.id === userId);
+    if (!u) return { success: false, message: 'User not found.' };
+
+    if (newPassword) {
+      const userPass = u.password || 'password123';
+      if (currentPassword && currentPassword !== userPass) {
+        return { success: false, message: 'Current password does not match.' };
+      }
+      u.password = newPassword.trim();
+    }
+
+    if (name) u.name = name.trim();
+    if (email) u.email = email.trim();
+    if (phone) u.phone = phone.trim();
+    if (avatar) u.avatar = avatar;
+
+    logServerAudit(db, 'Users', 'Profile Updated', `Updated profile & credentials for ${u.name}`, { name: u.name, role: u.role });
+    return { success: true, user: u };
+  });
+
+  if (!result.success) {
+    return res.status(400).json(result);
+  }
+  res.json(result);
 });
 
 app.put('/api/users/:id/permissions', (req: Request, res: Response) => {
@@ -908,6 +1095,124 @@ app.post('/api/campaigns', (req: Request, res: Response) => {
     return camp;
   });
   res.status(201).json(newCamp);
+});
+
+// 9.6 SMS MARKETING INTEGRATION & GATEWAY API
+app.get('/api/sms/gateway', (req: Request, res: Response) => {
+  const db = getDb();
+  const cfg = (db as any).smsGatewayConfig || {
+    provider: 'brand_sms',
+    senderId: 'MOTOPRO',
+    apiKey: 'pk_live_moto_sms_981273948',
+    creditsRemaining: 3450,
+    status: 'active'
+  };
+  res.json(cfg);
+});
+
+app.post('/api/sms/gateway', (req: Request, res: Response) => {
+  const cfg = req.body;
+  updateDb(db => {
+    (db as any).smsGatewayConfig = { ...((db as any).smsGatewayConfig || {}), ...cfg };
+  });
+  res.json({ success: true, message: 'SMS Gateway settings updated' });
+});
+
+app.get('/api/sms/logs', (req: Request, res: Response) => {
+  const db = getDb();
+  res.json((db as any).smsLogs || []);
+});
+
+app.post('/api/sms/send', (req: Request, res: Response) => {
+  const { recipientPhone, recipientName, message, templateType, customerId } = req.body;
+  if (!recipientPhone || !message) {
+    return res.status(400).json({ success: false, message: 'Recipient phone and message content are required.' });
+  }
+
+  const chars = message.length;
+  const units = Math.ceil(chars / 160) || 1;
+
+  const logEntry = {
+    id: `SMS-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    customerId,
+    customerName: recipientName || 'Customer',
+    phoneNumber: recipientPhone,
+    message,
+    templateType: templateType || 'custom',
+    characterCount: chars,
+    smsUnits: units,
+    status: 'delivered',
+    timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
+  };
+
+  updateDb(db => {
+    if (!(db as any).smsLogs) (db as any).smsLogs = [];
+    (db as any).smsLogs.unshift(logEntry);
+    if ((db as any).smsGatewayConfig) {
+      (db as any).smsGatewayConfig.creditsRemaining = Math.max(0, ((db as any).smsGatewayConfig.creditsRemaining || 3450) - units);
+    }
+    logServerAudit(
+      db,
+      'Marketing',
+      'SMS Sent',
+      `Sent ${units} SMS unit(s) to ${recipientName} (${recipientPhone})`,
+      { name: 'System / SMS Gateway', role: 'cashier' }
+    );
+  });
+
+  res.json({ success: true, message: `SMS sent successfully via Brand SMS Gateway to ${recipientPhone}`, logEntry });
+});
+
+app.post('/api/sms/broadcast', (req: Request, res: Response) => {
+  const { targetGroup, message, title } = req.body;
+  const db = getDb();
+  
+  let targetCustomers = db.customers;
+  if (targetGroup === 'mechanic') {
+    targetCustomers = db.customers.filter(c => c.group === 'Mechanic');
+  } else if (targetGroup === 'debtor') {
+    targetCustomers = db.customers.filter(c => c.receivableBalance > 0);
+  }
+
+  const count = targetCustomers.length;
+  const unitsPerMsg = Math.ceil(message.length / 160) || 1;
+  const totalUnits = count * unitsPerMsg;
+
+  updateDb(d => {
+    if (!(d as any).smsLogs) (d as any).smsLogs = [];
+    targetCustomers.forEach(c => {
+      const personalizedMsg = message
+        .replace('{customer_name}', c.name)
+        .replace('{due_amount}', c.receivableBalance ? c.receivableBalance.toLocaleString() : '0');
+
+      (d as any).smsLogs.unshift({
+        id: `SMS-${Date.now()}-${c.id}`,
+        customerId: c.id,
+        customerName: c.name,
+        phoneNumber: c.phone,
+        message: personalizedMsg,
+        templateType: 'offer',
+        characterCount: personalizedMsg.length,
+        smsUnits: unitsPerMsg,
+        status: 'delivered',
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
+      });
+    });
+
+    if ((d as any).smsGatewayConfig) {
+      (d as any).smsGatewayConfig.creditsRemaining = Math.max(0, ((d as any).smsGatewayConfig.creditsRemaining || 3450) - totalUnits);
+    }
+
+    logServerAudit(
+      d,
+      'Marketing',
+      'Bulk SMS Broadcast',
+      `Broadcasted campaign "${title}" to ${count} customers (${totalUnits} SMS credits consumed)`,
+      { name: 'Marketing Manager', role: 'manager' }
+    );
+  });
+
+  res.json({ success: true, message: `Broadcast sent to ${count} customers!`, count, totalUnits });
 });
 
 // ---------------------------------------------------------------------------

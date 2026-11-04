@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { 
   ShoppingBag, Plus, Search, Truck, 
-  Trash2, Printer, X, Eye
+  Trash2, Printer, X, Eye, RotateCcw
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { PurchaseInvoice, PurchaseItem } from '../types';
+import { ActiveTab } from '../components/layout/Sidebar';
 
-export const PurchasesPage: React.FC = () => {
-  const { purchases, suppliers, products, createPurchaseInvoice } = useApp();
+interface PurchasesPageProps {
+  setActiveTab?: (tab: ActiveTab) => void;
+}
+
+export const PurchasesPage: React.FC<PurchasesPageProps> = ({ setActiveTab }) => {
+  const { purchases, suppliers, products, createPurchaseInvoice, purchaseReturns } = useApp();
   const { hasPermission } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -101,7 +106,7 @@ export const PurchasesPage: React.FC = () => {
 
   return (
     <div
-      className="min-h-full bg-slate-950 text-slate-100 p-4 md:p-6 space-y-6 overflow-y-auto"
+      className="min-h-full bg-slate-950 text-slate-100 p-4 md:p-6 space-y-6 overflow-y-auto pb-28"
       style={{ colorScheme: 'dark' }}
     >
       <div className="max-w-7xl mx-auto space-y-6">
@@ -109,7 +114,7 @@ export const PurchasesPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-brand-500" />
+              <ShoppingBag className="w-5 h-5 text-rose-500" />
               Purchase Management & Inward Stock
             </h1>
             <p className="text-xs text-slate-400">
@@ -117,20 +122,33 @@ export const PurchasesPage: React.FC = () => {
             </p>
           </div>
 
-          <button
-            onClick={() => {
-              setPurchaseItems([]);
-              setShowCreateModal(true);
-            }}
-            className="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-brand-500/25 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>New Purchase Invoice</span>
-          </button>
+          <div className="flex items-center gap-2.5">
+            {setActiveTab && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('returns')}
+                className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-rose-400 border border-slate-700 hover:border-rose-500/50 text-xs font-bold rounded-xl flex items-center gap-1.5 transition"
+              >
+                <RotateCcw className="w-4 h-4 text-rose-400" />
+                <span>Purchase Returns</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => {
+                setPurchaseItems([]);
+                setShowCreateModal(true);
+              }}
+              className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-rose-600/25 transition"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Purchase Invoice</span>
+            </button>
+          </div>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-xs">
             <span className="text-xs text-slate-400 font-semibold">Total Purchases Recorded</span>
             <div className="text-lg font-extrabold text-white mt-1">
@@ -148,11 +166,19 @@ export const PurchasesPage: React.FC = () => {
           </div>
 
           <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-xs">
+            <span className="text-xs text-slate-400 font-semibold">Purchase Returns (Debit Notes)</span>
+            <div className="text-lg font-extrabold text-amber-400 mt-1">
+              Rs. {purchaseReturns.reduce((s, pr) => s + pr.totalRefundAmount, 0).toLocaleString()}
+            </div>
+            <span className="text-[10px] text-slate-400">{purchaseReturns.length} Supplier Returns Processed</span>
+          </div>
+
+          <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-xs">
             <span className="text-xs text-slate-400 font-semibold">Active Distributors</span>
             <div className="text-lg font-extrabold text-white mt-1">
               {suppliers.length} Suppliers
             </div>
-            <span className="text-[10px] text-emerald-400 font-semibold">Atlas Honda, Crown, Havoline, Shell</span>
+            <span className="text-[10px] text-emerald-400 font-semibold">Atlas Honda, Crown, Shell, Havoline</span>
           </div>
         </div>
 

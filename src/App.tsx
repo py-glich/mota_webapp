@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { Header } from './components/layout/Header';
 import { Sidebar, ActiveTab } from './components/layout/Sidebar';
+import { ProfileModal } from './components/layout/ProfileModal';
+import { AuthPage } from './pages/AuthPage';
 
 // Pages
 import { PosPage } from './pages/PosPage';
@@ -25,30 +27,49 @@ import { AuditLogsPage } from './pages/AuditLogsPage';
 import { BackupPage } from './pages/BackupPage';
 
 const MainLayout: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard'); // Start on MotoPro Dashboard matching screenshot
-  const [collapsed, setCollapsed] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  // If not logged in, show Auth / Sign In / Sign Up Screen
+  if (!isAuthenticated) {
+    return <AuthPage />;
+  }
 
   return (
-    <div className="flex h-screen bg-[#0A0D14] text-slate-100 overflow-hidden font-sans">
+    <div className="flex h-[100dvh] min-h-screen bg-[#0A0D14] text-slate-100 overflow-hidden font-sans relative">
+      {/* Mobile Drawer Backdrop */}
+      {mobileMenuOpen && (
+        <div 
+          onClick={() => setMobileMenuOpen(false)}
+          className="fixed inset-0 bg-black/70 backdrop-blur-xs z-40 md:hidden transition-opacity"
+        />
+      )}
+
       {/* Sidebar Navigation */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        collapsed={collapsed}
-        setCollapsed={setCollapsed}
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+        openProfileModal={() => setIsProfileModalOpen(true)}
       />
 
       {/* Main Body Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top Header with live counter and user switchers */}
-        <Header />
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        {/* Top Header with live counter, user switchers, hamburger */}
+        <Header 
+          onOpenMobileMenu={() => setMobileMenuOpen(true)}
+          onOpenProfileModal={() => setIsProfileModalOpen(true)}
+        />
 
-        {/* Dynamic Page Router */}
-        <main className="flex-1 overflow-hidden relative">
+        {/* Dynamic Page Router with Mobile Scroll Support */}
+        <main className="flex-1 overflow-y-auto min-h-0 relative overscroll-y-contain">
           {activeTab === 'pos' && <PosPage />}
           {activeTab === 'dashboard' && <DashboardPage setActiveTab={setActiveTab} />}
           {activeTab === 'products' && <ProductsPage />}
-          {activeTab === 'purchases' && <PurchasesPage />}
+          {activeTab === 'purchases' && <PurchasesPage setActiveTab={setActiveTab} />}
           {activeTab === 'inventory' && <InventoryPage />}
           {activeTab === 'returns' && <ReturnsPage />}
           {activeTab === 'customers' && <CustomersPage />}
@@ -65,6 +86,12 @@ const MainLayout: React.FC = () => {
           {activeTab === 'backup' && <BackupPage />}
         </main>
       </div>
+
+      {/* Profile & Password Management Modal */}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
     </div>
   );
 };

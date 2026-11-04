@@ -132,7 +132,7 @@ export const QuotationsPage: React.FC<QuotationsPageProps> = ({ setActiveTab }) 
 
   return (
     <div
-      className="min-h-full bg-slate-950 text-slate-100 p-4 md:p-6 space-y-6 overflow-y-auto"
+      className="min-h-full bg-slate-950 text-slate-100 p-4 md:p-6 space-y-6 overflow-y-auto pb-28"
       style={{ colorScheme: 'dark' }}
     >
       <div className="max-w-7xl mx-auto space-y-6">

@@ -53,7 +53,7 @@ export const CountersPage: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-6 overflow-y-auto max-w-7xl mx-auto">
+    <div className="p-3 sm:p-5 md:p-6 space-y-6 max-w-7xl mx-auto pb-24">
       {/* Header */}
       <div>
         <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
@@ -156,54 +156,56 @@ export const CountersPage: React.FC = () => {
         <div className="p-4 border-b border-[#1E2638] font-bold text-xs uppercase text-slate-400">
           Previous Shift Closings & Cash Drawer Audit Log
         </div>
-        <table className="w-full text-xs text-left">
-          <thead className="bg-[#0B0E14] text-slate-400 font-semibold uppercase text-[10px]">
-            <tr>
-              <th className="p-3">Closing Time</th>
-              <th className="p-3">Counter</th>
-              <th className="p-3">Cashier</th>
-              <th className="p-3">Expected Cash</th>
-              <th className="p-3">Actual Counted Cash</th>
-              <th className="p-3">Discrepancy</th>
-              <th className="p-3">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#1E2638] text-slate-200">
-            {shiftClosings.length === 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs text-left">
+            <thead className="bg-[#0B0E14] text-slate-400 font-semibold uppercase text-[10px]">
               <tr>
-                <td colSpan={7} className="p-6 text-center text-slate-500">No shift closings logged today yet.</td>
+                <th className="p-3">Closing Time</th>
+                <th className="p-3">Counter</th>
+                <th className="p-3">Cashier</th>
+                <th className="p-3">Expected Cash</th>
+                <th className="p-3">Actual Counted Cash</th>
+                <th className="p-3">Discrepancy</th>
+                <th className="p-3">Status</th>
               </tr>
-            ) : (
-              shiftClosings.map(shift => (
-                <tr key={shift.id} className="hover:bg-[#161C2C]/50 transition">
-                  <td className="p-3 font-mono text-[11px] text-slate-400">{shift.closedAt}</td>
-                  <td className="p-3 font-bold text-white">{shift.counterName.split('(')[0]}</td>
-                  <td className="p-3 text-slate-300">{shift.cashierName}</td>
-                  <td className="p-3 font-mono">Rs. {shift.expectedDrawerCash.toLocaleString()}</td>
-                  <td className="p-3 font-mono font-bold text-white">Rs. {shift.actualDrawerCash.toLocaleString()}</td>
-                  <td className="p-3 font-mono font-bold">
-                    {shift.discrepancy === 0 ? (
-                      <span className="text-emerald-400">Balanced (0)</span>
-                    ) : shift.discrepancy > 0 ? (
-                      <span className="text-blue-400">Surplus (+{shift.discrepancy})</span>
-                    ) : (
-                      <span className="text-rose-400">Shortage ({shift.discrepancy})</span>
-                    )}
-                  </td>
-                  <td className="p-3">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                      shift.status === 'balanced' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' :
-                      shift.status === 'surplus' ? 'bg-blue-950 text-blue-400 border border-blue-800/40' :
-                      'bg-rose-950 text-rose-400 border border-rose-800/40'
-                    }`}>
-                      {shift.status}
-                    </span>
-                  </td>
+            </thead>
+            <tbody className="divide-y divide-[#1E2638] text-slate-200">
+              {shiftClosings.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="p-6 text-center text-slate-500">No shift closings logged today yet.</td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                shiftClosings.map(shift => (
+                  <tr key={shift.id} className="hover:bg-[#161C2C]/50 transition">
+                    <td className="p-3 font-mono text-[11px] text-slate-400">{shift.closedAt}</td>
+                    <td className="p-3 font-bold text-white">{shift.counterName.split('(')[0]}</td>
+                    <td className="p-3 text-slate-300">{shift.cashierName}</td>
+                    <td className="p-3 font-mono">Rs. {shift.expectedDrawerCash.toLocaleString()}</td>
+                    <td className="p-3 font-mono font-bold text-white">Rs. {shift.actualDrawerCash.toLocaleString()}</td>
+                    <td className="p-3 font-mono font-bold">
+                      {shift.discrepancy === 0 ? (
+                        <span className="text-emerald-400">Balanced (0)</span>
+                      ) : shift.discrepancy > 0 ? (
+                        <span className="text-blue-400">Surplus (+{shift.discrepancy})</span>
+                      ) : (
+                        <span className="text-rose-400">Shortage ({shift.discrepancy})</span>
+                      )}
+                    </td>
+                    <td className="p-3">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                        shift.status === 'balanced' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' :
+                        shift.status === 'surplus' ? 'bg-blue-950 text-blue-400 border border-blue-800/40' :
+                        'bg-rose-950 text-rose-400 border border-rose-800/40'
+                      }`}>
+                        {shift.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* CLOSE SHIFT MODAL */}

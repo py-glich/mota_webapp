@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { 
   Search, Bell, ChevronDown, CheckCircle2, Shield, 
-  Monitor, RefreshCw, Database
+  Monitor, RefreshCw, Database, Menu, UserCheck, 
+  KeyRound, LogOut, Settings
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 
-export const Header: React.FC = () => {
-  const { currentUser, users, setCurrentUserById, currentCounter, counters, setCurrentCounterById } = useAuth();
+interface HeaderProps {
+  onOpenMobileMenu?: () => void;
+  onOpenProfileModal?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenProfileModal }) => {
+  const { currentUser, currentCounter, counters, setCurrentCounterById, logout } = useAuth();
   const { resetToFactoryDefaults, dbStatus, refreshFromDatabase } = useApp();
 
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -15,21 +21,30 @@ export const Header: React.FC = () => {
   const [showDbModal, setShowDbModal] = useState(false);
 
   return (
-    <header className="h-16 bg-[#0B0E14] border-b border-[#1B2232] px-6 flex items-center justify-between sticky top-0 z-30 select-none">
-      {/* Left: Global Search Input */}
-      <div className="flex-1 max-w-xl">
-        <div className="relative">
+    <header className="h-16 bg-[#0B0E14] border-b border-[#1B2232] px-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 select-none gap-2 sm:gap-4">
+      {/* Left: Hamburger (Mobile) + Global Search Input */}
+      <div className="flex items-center gap-2 flex-1 max-w-xl">
+        <button
+          type="button"
+          onClick={onOpenMobileMenu}
+          className="md:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#111622] border border-[#1E2638] shrink-0 transition"
+          aria-label="Open Navigation Menu"
+        >
+          <Menu className="w-5 h-5 text-slate-300" />
+        </button>
+
+        <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search products, customers... (Ctrl + K)"
-            className="w-full pl-10 pr-4 py-2 bg-[#111622] border border-[#1E2638] rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition"
+            className="w-full pl-9 sm:pl-10 pr-3 py-2 bg-[#111622] border border-[#1E2638] rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition"
           />
         </div>
       </div>
 
       {/* Right Controls: MongoDB Pill, Counter Selector, Notifications, User Profile */}
-      <div className="flex items-center gap-3 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
         {/* Live MongoDB Status Pill */}
         <div className="relative">
           <button
@@ -126,47 +141,71 @@ export const Header: React.FC = () => {
           </span>
         </div>
 
-        {/* User Profile Pill */}
+        {/* User Profile Pill & Dropdown */}
         <div className="relative">
           <button
             onClick={() => { setShowUserDropdown(!showUserDropdown); setShowCounterDropdown(false); setShowDbModal(false); }}
-            className="flex items-center gap-3 pl-1 pr-2 py-1 rounded-full hover:bg-[#111622] transition"
+            className="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-full hover:bg-[#111622] transition border border-transparent hover:border-[#1E2638]"
           >
-            <img
-              src={currentUser.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"}
-              alt={currentUser.name}
-              className="w-8 h-8 rounded-full object-cover border border-slate-700"
-            />
+            <div className="relative">
+              <img
+                src={currentUser?.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"}
+                alt={currentUser?.name}
+                className="w-8 h-8 rounded-full object-cover border border-rose-600"
+              />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border border-[#0B0E14] rounded-full"></span>
+            </div>
             <div className="text-left text-xs leading-tight hidden sm:block">
-              <span className="font-bold text-white block">{currentUser.name}</span>
-              <span className="text-[10px] text-slate-400 block capitalize">{currentUser.role}</span>
+              <span className="font-bold text-white block truncate max-w-[110px]">{currentUser?.name}</span>
+              <span className="text-[10px] text-rose-400 block capitalize">{currentUser?.role}</span>
             </div>
             <ChevronDown className="w-3 h-3 text-slate-400" />
           </button>
 
           {showUserDropdown && (
-            <div className="absolute right-0 mt-2 w-60 bg-[#111622] border border-[#1E2638] rounded-xl shadow-2xl py-2 z-50">
-              <div className="px-3 py-1.5 text-[10px] uppercase font-bold text-slate-500 border-b border-[#1B2232]">
-                Switch Active Role (RBAC)
+            <div className="absolute right-0 mt-2 w-64 bg-[#111622] border border-[#1E2638] rounded-2xl shadow-2xl py-2 z-50">
+              {/* Active Profile Info Header */}
+              <div className="px-4 py-2.5 border-b border-[#1B2232] flex items-center gap-3">
+                <img
+                  src={currentUser?.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"}
+                  alt={currentUser?.name}
+                  className="w-10 h-10 rounded-full object-cover border border-rose-500"
+                />
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-bold text-white text-xs truncate leading-tight">{currentUser?.name}</h4>
+                  <p className="text-[10px] text-slate-400 truncate">@{currentUser?.username}</p>
+                  <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-rose-950/70 text-rose-400 border border-rose-800/40">
+                    {currentUser?.role}
+                  </span>
+                </div>
               </div>
-              {users.map(u => (
+
+              {/* Account Management & Log Out */}
+              <div className="p-1 space-y-0.5">
                 <button
-                  key={u.id}
                   onClick={() => {
-                    setCurrentUserById(u.id);
                     setShowUserDropdown(false);
+                    onOpenProfileModal?.();
                   }}
-                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-[#161C2C] transition ${
-                    u.id === currentUser.id ? 'text-rose-500 font-bold bg-[#161C2C]' : 'text-slate-300'
-                  }`}
+                  className="w-full text-left px-3 py-2 text-xs rounded-xl hover:bg-[#161C2C] text-slate-200 hover:text-white flex items-center gap-2.5 transition font-semibold"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="capitalize">{u.name}</span>
-                    {u.id === currentUser.id && <CheckCircle2 className="w-3.5 h-3.5 text-rose-500" />}
-                  </div>
-                  <span className="text-[10px] text-slate-500 uppercase font-mono">{u.role}</span>
+                  <KeyRound className="w-4 h-4 text-rose-500" />
+                  <span>Manage Profile & Password</span>
                 </button>
-              ))}
+
+                <button
+                  onClick={() => {
+                    setShowUserDropdown(false);
+                    if (confirm('Log out from your current account?')) {
+                      logout();
+                    }
+                  }}
+                  className="w-full text-left px-3 py-2 text-xs rounded-xl text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 flex items-center gap-2.5 transition font-bold"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Log Out</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

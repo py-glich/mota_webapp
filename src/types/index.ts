@@ -271,6 +271,30 @@ export interface SalesReturn {
   createdAt: string;
 }
 
+export interface PurchaseReturnItem {
+  productId: string;
+  productName: string;
+  quantity: number;
+  purchasePrice: number;
+  total: number;
+  reason: string;
+}
+
+export interface PurchaseReturn {
+  id: string;
+  returnNumber: string;
+  purchaseId?: string;
+  purchaseInvoiceNumber?: string;
+  supplierId: string;
+  supplierName: string;
+  returnedItems: PurchaseReturnItem[];
+  totalRefundAmount: number;
+  refundMethod: 'supplier_ledger' | 'cash';
+  returnReason: string;
+  authorizedBy: string;
+  createdAt: string;
+}
+
 export interface Quotation {
   id: string;
   quoteNumber: string;
@@ -294,7 +318,7 @@ export interface CashbookEntry {
   counterId: string;
   date: string;
   type: 'in' | 'out';
-  category: 'Sales Receipt' | 'Customer Payment' | 'Supplier Payment' | 'Expense' | 'Cash Transfer' | 'Owner Drawing' | 'Capital In';
+  category: 'Sales Receipt' | 'Customer Payment' | 'Supplier Payment' | 'Supplier Refund' | 'Expense' | 'Cash Transfer' | 'Owner Drawing' | 'Capital In';
   amount: number;
   description: string;
   referenceId?: string;
@@ -338,7 +362,7 @@ export interface AuditLog {
   userName: string;
   userRole: Role;
   counterName: string;
-  module: 'POS' | 'Inventory' | 'Purchases' | 'Customers' | 'Suppliers' | 'Accounting' | 'Settings' | 'Users' | 'Returns' | 'Quotations';
+  module: 'POS' | 'Inventory' | 'Purchases' | 'Customers' | 'Suppliers' | 'Accounting' | 'Settings' | 'Users' | 'Returns' | 'Quotations' | 'Marketing';
   action: string;
   severity: 'info' | 'warning' | 'critical';
   details: string;
@@ -353,4 +377,27 @@ export interface MarketingCampaign {
   scheduledDate: string;
   status: 'draft' | 'sent' | 'active';
   recipientCount: number;
+}
+
+export interface SmsGatewayConfig {
+  provider: 'brand_sms' | 'twilio' | 'sms_country' | 'telnyx' | 'custom_http';
+  senderId: string;
+  apiKey: string;
+  apiSecret?: string;
+  endpointUrl?: string;
+  creditsRemaining: number;
+  status: 'active' | 'disconnected';
+}
+
+export interface SmsLogEntry {
+  id: string;
+  customerId?: string;
+  customerName: string;
+  phoneNumber: string;
+  message: string;
+  templateType: 'payment_reminder' | 'offer' | 'custom' | 'parts_arrival';
+  characterCount: number;
+  smsUnits: number;
+  status: 'delivered' | 'sent' | 'failed';
+  timestamp: string;
 }

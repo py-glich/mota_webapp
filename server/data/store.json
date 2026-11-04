@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "_id": "6ae9bc406d926859986221d3",
+      "_id": "6ae9c4e66d9268599862222b",
       "id": "PRD-001",
       "name": "Honda CG125 Cylinder Piston Kit (Standard 56.5mm)",
       "urduName": "ہونڈا 125 سلنڈر پسٹن کٹ",
@@ -30,11 +30,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221d4",
+      "_id": "6ae9c4e66d9268599862222c",
       "id": "PRD-002",
       "name": "Atlas Honda Genuine CG125 Clutch Plate Set (5 Pcs)",
       "urduName": "ہونڈا 125 اصل کلچ پلیٹ سیٹ",
@@ -62,11 +62,11 @@
       "isArchived": false,
       "damagedStock": 1,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221d5",
+      "_id": "6ae9c4e66d9268599862222d",
       "id": "PRD-003",
       "name": "Caltex Havoline 4T 20W-50 Engine Oil (0.7L for 70cc)",
       "urduName": "ہیولین 4T انجن آئل 0.7 لٹر",
@@ -95,11 +95,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221d6",
+      "_id": "6ae9c4e66d9268599862222e",
       "id": "PRD-004",
       "name": "Atlas Honda Genuine CD70 Chain Sprocket Complete Kit",
       "urduName": "ہونڈا 70 چین گراری مکمل سیٹ",
@@ -128,11 +128,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221d7",
+      "_id": "6ae9c4e66d9268599862222f",
       "id": "PRD-005",
       "name": "NGK Spark Plug C7HSA (Genuine Copper Core)",
       "urduName": "این جی کے اسپارک پلگ C7HSA",
@@ -162,11 +162,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221d8",
+      "_id": "6ae9c4e66d92685998622230",
       "id": "PRD-006",
       "name": "Servis Cheetah Rear Tyre 3.00-17 6PR Heavy Duty",
       "urduName": "سروس چیتا پچھلا ٹائر 3.00-17",
@@ -195,11 +195,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221d9",
+      "_id": "6ae9c4e66d92685998622231",
       "id": "PRD-007",
       "name": "Crown High-Grip Front & Rear Brake Shoe Set CD70",
       "urduName": "کراؤن بریک شو سیٹ ہونڈا 70",
@@ -228,11 +228,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221da",
+      "_id": "6ae9c4e66d92685998622232",
       "id": "PRD-008",
       "name": "Shell Advance 4T AX7 10W-40 Synthetic Based (1 Liter)",
       "urduName": "شیل ایڈوانس 4T AX7 انجن آئل 1 لٹر",
@@ -262,11 +262,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221db",
+      "_id": "6ae9c4e66d92685998622233",
       "id": "PRD-009",
       "name": "Yamaha YBR125 High-Flow OEM Air Filter Element",
       "urduName": "یاماہا وائے بی آر ایئر فلٹر",
@@ -294,11 +294,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221dc",
+      "_id": "6ae9c4e66d92685998622234",
       "id": "PRD-010",
       "name": "DOT Approved Matte Black Full Face Helmet (Large)",
       "urduName": "موٹر سائیکل فل فیس سیفٹی ہیلمٹ",
@@ -324,11 +324,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221dd",
+      "_id": "6ae9c4e66d92685998622235",
       "id": "PRD-011",
       "name": "CG125 Complete Headlight Assembly Chrome Rim (12V)",
       "urduName": "ہونڈا 125 ہیڈ لائٹ مکمل کروم",
@@ -356,11 +356,11 @@
       "isArchived": false,
       "damagedStock": 2,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221de",
+      "_id": "6ae9c4e66d92685998622236",
       "id": "PRD-012",
       "name": "DID Japan Heavy Duty 428D Drive Chain (108 Links)",
       "urduName": "ڈی آئی ڈی جاپان ہیوی ڈیوٹی چین",
@@ -388,11 +388,11 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-03T10:42:28.222Z",
+      "updatedAt": "2026-11-04T06:18:17.503Z",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221df",
+      "_id": "6ae9c4e66d92685998622237",
       "id": "PRD-001",
       "name": "Honda CG125 Cylinder Piston Kit (Standard 56.5mm)",
       "urduName": "ہونڈا 125 سلنڈر پسٹن کٹ",
@@ -425,7 +425,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e0",
+      "_id": "6ae9c4e66d92685998622238",
       "id": "PRD-002",
       "name": "Atlas Honda Genuine CG125 Clutch Plate Set (5 Pcs)",
       "urduName": "ہونڈا 125 اصل کلچ پلیٹ سیٹ",
@@ -457,7 +457,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e1",
+      "_id": "6ae9c4e66d92685998622239",
       "id": "PRD-003",
       "name": "Caltex Havoline 4T 20W-50 Engine Oil (0.7L for 70cc)",
       "urduName": "ہیولین 4T انجن آئل 0.7 لٹر",
@@ -490,7 +490,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e2",
+      "_id": "6ae9c4e66d9268599862223a",
       "id": "PRD-004",
       "name": "Atlas Honda Genuine CD70 Chain Sprocket Complete Kit",
       "urduName": "ہونڈا 70 چین گراری مکمل سیٹ",
@@ -523,7 +523,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e3",
+      "_id": "6ae9c4e66d9268599862223b",
       "id": "PRD-005",
       "name": "NGK Spark Plug C7HSA (Genuine Copper Core)",
       "urduName": "این جی کے اسپارک پلگ C7HSA",
@@ -557,7 +557,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e4",
+      "_id": "6ae9c4e66d9268599862223c",
       "id": "PRD-006",
       "name": "Servis Cheetah Rear Tyre 3.00-17 6PR Heavy Duty",
       "urduName": "سروس چیتا پچھلا ٹائر 3.00-17",
@@ -590,7 +590,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e5",
+      "_id": "6ae9c4e66d9268599862223d",
       "id": "PRD-007",
       "name": "Crown High-Grip Front & Rear Brake Shoe Set CD70",
       "urduName": "کراؤن بریک شو سیٹ ہونڈا 70",
@@ -623,7 +623,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e6",
+      "_id": "6ae9c4e66d9268599862223e",
       "id": "PRD-008",
       "name": "Shell Advance 4T AX7 10W-40 Synthetic Based (1 Liter)",
       "urduName": "شیل ایڈوانس 4T AX7 انجن آئل 1 لٹر",
@@ -657,7 +657,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e7",
+      "_id": "6ae9c4e66d9268599862223f",
       "id": "PRD-009",
       "name": "Yamaha YBR125 High-Flow OEM Air Filter Element",
       "urduName": "یاماہا وائے بی آر ایئر فلٹر",
@@ -689,7 +689,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e8",
+      "_id": "6ae9c4e66d92685998622240",
       "id": "PRD-010",
       "name": "DOT Approved Matte Black Full Face Helmet (Large)",
       "urduName": "موٹر سائیکل فل فیس سیفٹی ہیلمٹ",
@@ -719,7 +719,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221e9",
+      "_id": "6ae9c4e66d92685998622241",
       "id": "PRD-011",
       "name": "CG125 Complete Headlight Assembly Chrome Rim (12V)",
       "urduName": "ہونڈا 125 ہیڈ لائٹ مکمل کروم",
@@ -751,7 +751,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221ea",
+      "_id": "6ae9c4e66d92685998622242",
       "id": "PRD-012",
       "name": "DID Japan Heavy Duty 428D Drive Chain (108 Links)",
       "urduName": "ڈی آئی ڈی جاپان ہیوی ڈیوٹی چین",
@@ -785,7 +785,7 @@
   ],
   "categories": [
     {
-      "_id": "6ae9bc406d926859986221eb",
+      "_id": "6ae9c4e66d92685998622243",
       "id": "CAT-ENG",
       "name": "Engine & Transmission",
       "urduName": "انجن اور ٹرانسمیشن",
@@ -793,7 +793,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221ec",
+      "_id": "6ae9c4e66d92685998622244",
       "id": "CAT-BRK",
       "name": "Brakes & Cables",
       "urduName": "بریک اور کیبلز",
@@ -801,7 +801,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221ed",
+      "_id": "6ae9c4e66d92685998622245",
       "id": "CAT-ELE",
       "name": "Electrical & Lighting",
       "urduName": "الیکٹریکل اور لائٹس",
@@ -809,7 +809,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221ee",
+      "_id": "6ae9c4e66d92685998622246",
       "id": "CAT-TYR",
       "name": "Tires & Tubes",
       "urduName": "ٹائر اور ٹیوب",
@@ -817,7 +817,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221ef",
+      "_id": "6ae9c4e66d92685998622247",
       "id": "CAT-LUB",
       "name": "Lubricants & Oils",
       "urduName": "انجن آئل اور لیوبریکنٹ",
@@ -825,7 +825,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221f0",
+      "_id": "6ae9c4e66d92685998622248",
       "id": "CAT-BDY",
       "name": "Body Parts & Frame",
       "urduName": "باڈی پارٹس اور فریم",
@@ -833,7 +833,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221f1",
+      "_id": "6ae9c4e66d92685998622249",
       "id": "CAT-ACC",
       "name": "Accessories & Safety",
       "urduName": "لوازمات اور ہیلمٹ",
@@ -843,70 +843,70 @@
   ],
   "brands": [
     {
-      "_id": "6ae9bc406d926859986221f2",
+      "_id": "6ae9c4e66d9268599862224a",
       "id": "BRD-HON",
       "name": "Atlas Honda Genuine",
       "origin": "Pakistan / Japan",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221f3",
+      "_id": "6ae9c4e66d9268599862224b",
       "id": "BRD-CRW",
       "name": "Crown Lifan",
       "origin": "Pakistan",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221f4",
+      "_id": "6ae9c4e66d9268599862224c",
       "id": "BRD-YAM",
       "name": "Yamaha Genuine",
       "origin": "Japan / Pakistan",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221f5",
+      "_id": "6ae9c4e66d9268599862224d",
       "id": "BRD-SUZ",
       "name": "Suzuki Genuine",
       "origin": "Pakistan",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221f6",
+      "_id": "6ae9c4e66d9268599862224e",
       "id": "BRD-NGK",
       "name": "NGK Spark Plugs",
       "origin": "Japan",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221f7",
+      "_id": "6ae9c4e66d9268599862224f",
       "id": "BRD-GEN",
       "name": "General Tyre",
       "origin": "Pakistan",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221f8",
+      "_id": "6ae9c4e66d92685998622250",
       "id": "BRD-SRV",
       "name": "Servis Tyres",
       "origin": "Pakistan",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221f9",
+      "_id": "6ae9c4e66d92685998622251",
       "id": "BRD-HAV",
       "name": "Caltex Havoline",
       "origin": "USA",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221fa",
+      "_id": "6ae9c4e66d92685998622252",
       "id": "BRD-SHL",
       "name": "Shell Advance",
       "origin": "Netherlands / PK",
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221fb",
+      "_id": "6ae9c4e66d92685998622253",
       "id": "BRD-DID",
       "name": "DID Japan Chain",
       "origin": "Japan",
@@ -915,7 +915,7 @@
   ],
   "customers": [
     {
-      "_id": "6ae9bc406d926859986221fc",
+      "_id": "6ae9c4e66d92685998622254",
       "id": "CUST-001",
       "name": "Walk-in Cash Customer",
       "phone": "0300-0000000",
@@ -931,7 +931,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221fd",
+      "_id": "6ae9c4e66d92685998622255",
       "id": "CUST-002",
       "name": "Ustad Akram (Akram Auto Workshop)",
       "phone": "+92 301 5551234",
@@ -949,7 +949,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221fe",
+      "_id": "6ae9c4e66d92685998622256",
       "id": "CUST-003",
       "name": "Muhammad Rizwan (Delivery Rider)",
       "phone": "+92 322 7788990",
@@ -967,7 +967,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d926859986221ff",
+      "_id": "6ae9c4e66d92685998622257",
       "id": "CUST-004",
       "name": "Rehman Bike Tuning & Spares",
       "phone": "+92 345 8899112",
@@ -985,7 +985,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622200",
+      "_id": "6ae9c4e66d92685998622258",
       "id": "CUST-005",
       "name": "Kamran Haider (Bike Enthusiast)",
       "phone": "+92 313 4455889",
@@ -1004,7 +1004,7 @@
   ],
   "suppliers": [
     {
-      "_id": "6ae9bc406d92685998622201",
+      "_id": "6ae9c4e66d92685998622259",
       "id": "SUP-01",
       "companyName": "Atlas Honda Ltd.",
       "contactPerson": "Mr. Salman Qureshi",
@@ -1020,7 +1020,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622202",
+      "_id": "6ae9c4e66d9268599862225a",
       "id": "SUP-02",
       "companyName": "Crown Group Pakistan",
       "contactPerson": "Khurram Shehzad",
@@ -1036,7 +1036,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622203",
+      "_id": "6ae9c4e66d9268599862225b",
       "id": "SUP-03",
       "companyName": "Chevron Pakistan Lubricants Pvt Ltd",
       "contactPerson": "Naveed Akhtar",
@@ -1052,7 +1052,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622204",
+      "_id": "6ae9c4e66d9268599862225c",
       "id": "SUP-04",
       "companyName": "Ittehad Tyre Traders",
       "contactPerson": "Chaudhry Riaz",
@@ -1069,7 +1069,7 @@
   ],
   "invoices": [
     {
-      "_id": "6ae9bc406d92685998622205",
+      "_id": "6ae9c4e66d9268599862225d",
       "id": "INV-2026-01041",
       "invoiceNumber": "INV-2026-01041",
       "counterId": "CTR-1",
@@ -1178,7 +1178,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622208",
+      "_id": "6ae9c4e66d92685998622260",
       "id": "INV-2026-01042",
       "invoiceNumber": "INV-2026-01042",
       "counterId": "CTR-2",
@@ -1288,7 +1288,7 @@
   ],
   "purchases": [
     {
-      "_id": "6ae9bc406d9268599862220b",
+      "_id": "6ae9c4e66d92685998622263",
       "id": "PO-2026-0045",
       "invoiceNumber": "PO-2026-0045",
       "supplierId": "SUP-01",
@@ -1335,7 +1335,7 @@
   ],
   "expenses": [
     {
-      "_id": "6ae9bc406d9268599862220e",
+      "_id": "6ae9c4e66d92685998622266",
       "id": "EXP-101",
       "date": "2026-11-02 11:00",
       "category": "Shop Refreshment & Tea",
@@ -1349,7 +1349,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d9268599862220f",
+      "_id": "6ae9c4e66d92685998622267",
       "id": "EXP-102",
       "date": "2026-11-01 16:30",
       "category": "Stationery & Receipt Paper",
@@ -1363,7 +1363,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622210",
+      "_id": "6ae9c4e66d92685998622268",
       "id": "EXP-103",
       "date": "2026-11-01 10:00",
       "category": "Electricity & Utilities",
@@ -1379,7 +1379,7 @@
   ],
   "cashbook": [
     {
-      "_id": "6ae9bc406d92685998622211",
+      "_id": "6ae9c4e66d92685998622269",
       "id": "CB-001",
       "counterId": "CTR-1",
       "date": "2026-11-02 09:00",
@@ -1393,7 +1393,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622212",
+      "_id": "6ae9c4e66d9268599862226a",
       "id": "CB-002",
       "counterId": "CTR-2",
       "date": "2026-11-02 09:15",
@@ -1407,7 +1407,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622213",
+      "_id": "6ae9c4e66d9268599862226b",
       "id": "CB-003",
       "counterId": "CTR-1",
       "date": "2026-11-02 10:15",
@@ -1422,7 +1422,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622214",
+      "_id": "6ae9c4e66d9268599862226c",
       "id": "CB-004",
       "counterId": "CTR-1",
       "date": "2026-11-02 11:00",
@@ -1437,7 +1437,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622215",
+      "_id": "6ae9c4e66d9268599862226d",
       "id": "CB-005",
       "counterId": "CTR-2",
       "date": "2026-11-02 11:30",
@@ -1452,7 +1452,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622216",
+      "_id": "6ae9c4e66d9268599862226e",
       "id": "CB-001",
       "counterId": "CTR-1",
       "date": "2026-11-02 09:00",
@@ -1466,7 +1466,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622217",
+      "_id": "6ae9c4e66d9268599862226f",
       "id": "CB-002",
       "counterId": "CTR-2",
       "date": "2026-11-02 09:15",
@@ -1480,7 +1480,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622218",
+      "_id": "6ae9c4e66d92685998622270",
       "id": "CB-003",
       "counterId": "CTR-1",
       "date": "2026-11-02 10:15",
@@ -1495,7 +1495,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622219",
+      "_id": "6ae9c4e66d92685998622271",
       "id": "CB-004",
       "counterId": "CTR-1",
       "date": "2026-11-02 11:00",
@@ -1510,7 +1510,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d9268599862221a",
+      "_id": "6ae9c4e66d92685998622272",
       "id": "CB-005",
       "counterId": "CTR-2",
       "date": "2026-11-02 11:30",
@@ -1531,7 +1531,7 @@
   "salesReturns": [],
   "quotations": [
     {
-      "_id": "6ae9bc406d9268599862221b",
+      "_id": "6ae9c4e66d92685998622273",
       "id": "QUO-2026-0018",
       "quoteNumber": "QUO-2026-0018",
       "customerId": "CUST-005",
@@ -1630,7 +1630,7 @@
   ],
   "campaigns": [
     {
-      "_id": "6ae9bc406d9268599862221e",
+      "_id": "6ae9c4e66d92685998622276",
       "id": "CMP-01",
       "title": "Winter Engine Oil Service Special (Free Oil Filter & Tuning Check)",
       "type": "whatsapp",
@@ -1644,7 +1644,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d9268599862221f",
+      "_id": "6ae9c4e66d92685998622277",
       "id": "CMP-02",
       "title": "Monthly Ledger Outstanding Balance Reminder",
       "type": "whatsapp",
@@ -1661,7 +1661,31 @@
   "shiftClosings": [],
   "auditLogs": [
     {
-      "_id": "6ae9bc406d92685998622220",
+      "id": "AUD-1793773641606-950",
+      "timestamp": "2026-11-04 06:27:21",
+      "userId": "SYS",
+      "userName": "Faizan Ilyas",
+      "userRole": "manager",
+      "counterName": "Server Central",
+      "module": "Purchases",
+      "action": "Purchase Return Processed",
+      "severity": "info",
+      "details": "Processed purchase return PR-2026-0001 to supplier Atlas Honda Pakistan Ltd for Rs. 2500"
+    },
+    {
+      "id": "AUD-1793773613437-664",
+      "timestamp": "2026-11-04 06:26:53",
+      "userId": "SYS",
+      "userName": "System / SMS Gateway",
+      "userRole": "cashier",
+      "counterName": "Server Central",
+      "module": "Marketing",
+      "action": "SMS Sent",
+      "severity": "info",
+      "details": "Sent 1 SMS unit(s) to Ustad Akram (03001234567)"
+    },
+    {
+      "_id": "6ae9c4e66d92685998622278",
       "id": "AUD-001",
       "timestamp": "2026-11-02 08:55:12",
       "userId": "USR-01",
@@ -1677,7 +1701,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622221",
+      "_id": "6ae9c4e66d92685998622279",
       "id": "AUD-002",
       "timestamp": "2026-11-02 09:02:40",
       "userId": "USR-03",
@@ -1693,7 +1717,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622222",
+      "_id": "6ae9c4e66d9268599862227a",
       "id": "AUD-003",
       "timestamp": "2026-11-02 10:15:30",
       "userId": "USR-03",
@@ -1709,7 +1733,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622223",
+      "_id": "6ae9c4e66d9268599862227b",
       "id": "AUD-004",
       "timestamp": "2026-11-02 11:32:15",
       "userId": "USR-04",
@@ -1727,7 +1751,7 @@
   ],
   "users": [
     {
-      "_id": "6ae9bc406d92685998622224",
+      "_id": "6ae9c4e66d9268599862227c",
       "id": "USR-01",
       "name": "Faizan Ilyas",
       "username": "owner",
@@ -1760,7 +1784,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622225",
+      "_id": "6ae9c4e66d9268599862227d",
       "id": "USR-02",
       "name": "Hamza Rafiq",
       "username": "manager",
@@ -1792,7 +1816,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622226",
+      "_id": "6ae9c4e66d9268599862227e",
       "id": "USR-03",
       "name": "Bilal Ahmed",
       "username": "cashier1",
@@ -1826,7 +1850,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622227",
+      "_id": "6ae9c4e66d9268599862227f",
       "id": "USR-04",
       "name": "Usman Ali",
       "username": "cashier2",
@@ -1860,7 +1884,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d92685998622228",
+      "_id": "6ae9c4e66d92685998622280",
       "id": "USR-05",
       "name": "Zahid Khan",
       "username": "storekeeper",
@@ -1894,7 +1918,7 @@
   ],
   "counters": [
     {
-      "_id": "6ae9bc406d92685998622229",
+      "_id": "6ae9c4e66d92685998622281",
       "id": "CTR-1",
       "name": "Counter 1 (Front Showroom)",
       "code": "C1",
@@ -1911,7 +1935,7 @@
       "__v": 0
     },
     {
-      "_id": "6ae9bc406d9268599862222a",
+      "_id": "6ae9c4e66d92685998622282",
       "id": "CTR-2",
       "name": "Counter 2 (Workshop & Parts)",
       "code": "C2",
@@ -1928,5 +1952,42 @@
       "__v": 0
     }
   ],
-  "managerPin": "1234"
+  "managerPin": "1234",
+  "smsLogs": [
+    {
+      "id": "SMS-1793773613437-676",
+      "customerName": "Ustad Akram",
+      "phoneNumber": "03001234567",
+      "message": "Assalam-o-Alaikum! Your due balance is Rs 14,200. Kindly clear this week.",
+      "templateType": "payment_reminder",
+      "characterCount": 73,
+      "smsUnits": 1,
+      "status": "delivered",
+      "timestamp": "2026-11-04 06:26"
+    }
+  ],
+  "purchaseReturns": [
+    {
+      "supplierId": "SUP-001",
+      "supplierName": "Atlas Honda Pakistan Ltd",
+      "purchaseInvoiceNumber": "PO-2026-001",
+      "returnedItems": [
+        {
+          "productId": "PROD-001",
+          "productName": "Atlas Honda Genuine Piston & Ring Kit (CD70)",
+          "quantity": 2,
+          "purchasePrice": 1250,
+          "total": 2500,
+          "reason": "Defective packaging"
+        }
+      ],
+      "totalRefundAmount": 2500,
+      "refundMethod": "supplier_ledger",
+      "returnReason": "Defective batch from distributor",
+      "authorizedBy": "Faizan Ilyas",
+      "id": "PR-2026-0001",
+      "returnNumber": "PR-2026-0001",
+      "createdAt": "2026-11-04 06:27"
+    }
+  ]
 }
