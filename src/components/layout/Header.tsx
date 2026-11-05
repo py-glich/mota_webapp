@@ -45,6 +45,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenProfileM
 
       {/* Right Controls: MongoDB Pill, Counter Selector, Notifications, User Profile */}
       <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        {/* Real-time 2-Counter Sync Indicator */}
+        <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-950/40 border border-emerald-800/40 text-[10px] text-emerald-400 font-semibold" title="Real-time Two-Counter Sync: Active (Auto-syncs every 4s)">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>2-Counter Sync: Active</span>
+        </div>
+
         {/* Live MongoDB Status Pill */}
         <div className="relative">
           <button

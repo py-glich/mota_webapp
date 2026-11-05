@@ -8,6 +8,7 @@ import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { Product, CartItem, Customer, PaymentMethod, SalesInvoice } from '../types';
 import { ThermalReceipt } from '../components/print/ThermalReceipt';
+import { A4Invoice } from '../components/print/A4Invoice';
 
 export const PosPage: React.FC = () => {
   const { products, customers, completeSalesInvoice, invoices, voidSalesInvoice } = useApp();
@@ -30,6 +31,7 @@ export const PosPage: React.FC = () => {
   
   // Modals & Popups
   const [activeReceipt, setActiveReceipt] = useState<SalesInvoice | null>(null);
+  const [a4Receipt, setA4Receipt] = useState<SalesInvoice | null>(null);
   const [showRecentInvoices, setShowRecentInvoices] = useState<boolean>(false);
   const [voidModalInvoice, setVoidModalInvoice] = useState<SalesInvoice | null>(null);
   const [voidReason, setVoidReason] = useState<string>('');
@@ -372,14 +374,14 @@ export const PosPage: React.FC = () => {
 
           {/* Product Grid */}
           <div className="flex-1 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 content-start pb-28">
-            {filteredProducts.map(product => {
+            {filteredProducts.map((product, index) => {
               const inCart = cart.find(i => i.product.id === product.id);
               const isOutOfStock = product.currentStock <= 0;
               const isLowStock = product.currentStock <= product.minStockAlert;
 
               return (
                 <div
-                  key={product.id}
+                  key={`${product.id}-${index}`}
                   onClick={() => !isOutOfStock && addToCart(product)}
                   className={`relative bg-[#111622] border rounded-xl p-3 flex flex-col justify-between transition-all select-none shadow-lg group ${
                     isOutOfStock 
@@ -814,6 +816,16 @@ export const PosPage: React.FC = () => {
                             <Printer className="w-3 h-3 inline mr-1 text-rose-400" />
                             Reprint
                           </button>
+                          <button
+                            onClick={() => {
+                              setA4Receipt(inv);
+                              setShowRecentInvoices(false);
+                            }}
+                            className="px-2 py-1 rounded-lg bg-indigo-950/60 hover:bg-indigo-900/70 text-indigo-300 text-[10px] font-semibold transition border border-indigo-800/40"
+                            title="Print A4 Invoice"
+                          >
+                            A4
+                          </button>
                           {inv.status === 'completed' && (
                             <button
                               onClick={() => setVoidModalInvoice(inv)}
@@ -888,7 +900,19 @@ export const PosPage: React.FC = () => {
 
       {/* THERMAL RECEIPT PREVIEW MODAL */}
       {activeReceipt && (
-        <ThermalReceipt invoice={activeReceipt} onClose={() => setActiveReceipt(null)} />
+        <ThermalReceipt
+          invoice={activeReceipt}
+          onClose={() => setActiveReceipt(null)}
+          onPrintA4={() => {
+            setA4Receipt(activeReceipt);
+            setActiveReceipt(null);
+          }}
+        />
+      )}
+
+      {/* A4 INVOICE PRINT MODAL */}
+      {a4Receipt && (
+        <A4Invoice invoice={a4Receipt} onClose={() => setA4Receipt(null)} />
       )}
     </div>
   );

@@ -25,6 +25,7 @@ import { UsersPage } from './pages/UsersPage';
 import { PermissionsPage } from './pages/PermissionsPage';
 import { AuditLogsPage } from './pages/AuditLogsPage';
 import { BackupPage } from './pages/BackupPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 const MainLayout: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -84,6 +85,7 @@ const MainLayout: React.FC = () => {
           {activeTab === 'permissions' && <PermissionsPage />}
           {activeTab === 'audit' && <AuditLogsPage />}
           {activeTab === 'backup' && <BackupPage />}
+          {activeTab === 'settings' && <SettingsPage />}
         </main>
       </div>
 

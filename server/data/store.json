@@ -30,7 +30,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -62,7 +62,7 @@
       "isArchived": false,
       "damagedStock": 1,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -95,7 +95,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -128,7 +128,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -162,7 +162,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -195,7 +195,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -228,7 +228,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -262,7 +262,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -294,7 +294,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -324,7 +324,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -356,7 +356,7 @@
       "isArchived": false,
       "damagedStock": 2,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -388,7 +388,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-04T06:18:17.503Z",
+      "updatedAt": "2026-11-05T10:00:22.806Z",
       "__v": 0
     },
     {
@@ -1661,28 +1661,40 @@
   "shiftClosings": [],
   "auditLogs": [
     {
-      "id": "AUD-1793773641606-950",
-      "timestamp": "2026-11-04 06:27:21",
+      "id": "AUD-1793874075903-584",
+      "timestamp": "2026-11-05 10:21:15",
       "userId": "SYS",
       "userName": "Faizan Ilyas",
-      "userRole": "manager",
+      "userRole": "owner",
       "counterName": "Server Central",
-      "module": "Purchases",
-      "action": "Purchase Return Processed",
+      "module": "Users",
+      "action": "User Login",
       "severity": "info",
-      "details": "Processed purchase return PR-2026-0001 to supplier Atlas Honda Pakistan Ltd for Rs. 2500"
+      "details": "Faizan Ilyas logged in successfully"
     },
     {
-      "id": "AUD-1793773613437-664",
-      "timestamp": "2026-11-04 06:26:53",
+      "id": "AUD-1793874013654-9",
+      "timestamp": "2026-11-05 10:20:13",
       "userId": "SYS",
-      "userName": "System / SMS Gateway",
-      "userRole": "cashier",
-      "counterName": "Server Central",
-      "module": "Marketing",
-      "action": "SMS Sent",
+      "userName": "Automated Backup Daemon",
+      "userRole": "system",
+      "counterName": "Server",
+      "module": "Settings",
+      "action": "Cloud Backup Failed",
+      "severity": "critical",
+      "details": "Automated Cloud Backup Failure: Remote cloud endpoint unreachable (Timeout 504). Please verify network connection or manual export."
+    },
+    {
+      "id": "AUD-1793873997191-624",
+      "timestamp": "2026-11-05 10:19:57",
+      "userId": "SYS",
+      "userName": "Automated Backup Daemon",
+      "userRole": "system",
+      "counterName": "Server",
+      "module": "Settings",
+      "action": "Cloud Backup Succeeded",
       "severity": "info",
-      "details": "Sent 1 SMS unit(s) to Ustad Akram (03001234567)"
+      "details": "Encrypted cloud snapshot CBK-1793873997190 created (31 records synced)"
     },
     {
       "_id": "6ae9c4e66d92685998622278",
@@ -1781,7 +1793,8 @@
       },
       "createdAt": "2026-11-03T10:42:28.550Z",
       "updatedAt": "2026-11-03T10:42:28.550Z",
-      "__v": 0
+      "__v": 0,
+      "lastLogin": "2026-11-05 10:21:15"
     },
     {
       "_id": "6ae9c4e66d9268599862227d",
@@ -1952,42 +1965,5 @@
       "__v": 0
     }
   ],
-  "managerPin": "1234",
-  "smsLogs": [
-    {
-      "id": "SMS-1793773613437-676",
-      "customerName": "Ustad Akram",
-      "phoneNumber": "03001234567",
-      "message": "Assalam-o-Alaikum! Your due balance is Rs 14,200. Kindly clear this week.",
-      "templateType": "payment_reminder",
-      "characterCount": 73,
-      "smsUnits": 1,
-      "status": "delivered",
-      "timestamp": "2026-11-04 06:26"
-    }
-  ],
-  "purchaseReturns": [
-    {
-      "supplierId": "SUP-001",
-      "supplierName": "Atlas Honda Pakistan Ltd",
-      "purchaseInvoiceNumber": "PO-2026-001",
-      "returnedItems": [
-        {
-          "productId": "PROD-001",
-          "productName": "Atlas Honda Genuine Piston & Ring Kit (CD70)",
-          "quantity": 2,
-          "purchasePrice": 1250,
-          "total": 2500,
-          "reason": "Defective packaging"
-        }
-      ],
-      "totalRefundAmount": 2500,
-      "refundMethod": "supplier_ledger",
-      "returnReason": "Defective batch from distributor",
-      "authorizedBy": "Faizan Ilyas",
-      "id": "PR-2026-0001",
-      "returnNumber": "PR-2026-0001",
-      "createdAt": "2026-11-04 06:27"
-    }
-  ]
+  "managerPin": "1234"
 }

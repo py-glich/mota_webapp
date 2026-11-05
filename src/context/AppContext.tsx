@@ -316,6 +316,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     refreshFromDatabase();
+    // Real-time two-counter synchronization interval (4s)
+    const syncTimer = setInterval(() => {
+      refreshFromDatabase();
+    }, 4000);
+    return () => clearInterval(syncTimer);
   }, []);
 
   // Save to localStorage
@@ -911,10 +916,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     title: string
   ): Promise<{ success: boolean; count: number }> => {
     let target = customers;
-    if (targetGroup === 'mechanic') {
+    const lower = targetGroup.toLowerCase();
+    if (lower.includes('mechanic')) {
       target = customers.filter(c => c.group === 'Mechanic');
-    } else if (targetGroup === 'debtor') {
+    } else if (lower.includes('debtor')) {
       target = customers.filter(c => c.receivableBalance > 0);
+    } else if (lower.includes('vip') || lower.includes('loyalty')) {
+      target = customers.filter(c => (c.loyaltyPoints || 0) >= 50);
+    } else if (lower.includes('cd70') || lower.includes('cd 70')) {
+      target = customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('cd70'));
+    } else if (lower.includes('cg125') || lower.includes('cg 125') || lower.includes('125')) {
+      target = customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('125'));
+    } else if (lower.includes('ybr')) {
+      target = customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('ybr'));
+    } else if (lower.includes('gs150') || lower.includes('gs 150')) {
+      target = customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('gs'));
+    } else if (lower.includes('repeat')) {
+      target = customers.filter(c => (c.totalPurchases && c.totalPurchases > 10000) || (c.loyaltyPoints && c.loyaltyPoints > 20));
     }
 
     const unitsPerMsg = Math.ceil(message.length / 160) || 1;
@@ -1039,6 +1057,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...s,
       payableBalance: Math.max(0, s.payableBalance - amount)
     } : s));
+
+    // Automated FIFO allocation across pending purchase invoices
+    let remainingAmount = amount;
+    setPurchases(prev => prev.map(p => {
+      if (p.supplierId !== supplierId || p.paymentStatus === 'paid' || remainingAmount <= 0) {
+        return p;
+      }
+      const due = p.balanceDue ?? (p.grandTotal - (p.paidAmount || 0));
+      if (due <= 0) return p;
+      const payForThis = Math.min(due, remainingAmount);
+      remainingAmount -= payForThis;
+      const newPaid = (p.paidAmount || 0) + payForThis;
+      const newDue = Math.max(0, p.grandTotal - newPaid);
+      return {
+        ...p,
+        paidAmount: newPaid,
+        balanceDue: newDue,
+        paymentStatus: newDue === 0 ? 'paid' : 'partial'
+      };
+    }));
 
     if (paymentMethod === 'cash') {
       updateCounterCash(currentCounter.id, -amount);

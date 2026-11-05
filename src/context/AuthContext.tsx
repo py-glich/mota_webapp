@@ -140,6 +140,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       const data = await res.json();
       if (data.success && data.user) {
+        if (data.token) {
+          localStorage.setItem('cyberorion_auth_token', data.token);
+        }
         setCurrentUser(data.user);
         setIsAuthenticated(true);
         if (data.user.counterId && (data.user.counterId === 'CTR-1' || data.user.counterId === 'CTR-2')) {
@@ -241,6 +244,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Logout handler
   const logout = () => {
+    const token = localStorage.getItem('cyberorion_auth_token');
+    if (token) {
+      fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).catch(() => {});
+      localStorage.removeItem('cyberorion_auth_token');
+    }
     setIsAuthenticated(false);
     localStorage.removeItem('cyberorion_is_authenticated');
   };

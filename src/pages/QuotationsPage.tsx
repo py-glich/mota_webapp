@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   FileText, Plus, Search, MessageCircle, 
-  Trash2, X
+  Trash2, X, Printer
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +12,218 @@ interface QuotationsPageProps {
   setActiveTab: (tab: ActiveTab) => void;
 }
 
+/* ─── Inline A4 Quotation Print Component ─── */
+interface QuotationA4Props {
+  quotation: Quotation;
+  onClose: () => void;
+}
+
+const QuotationA4Print: React.FC<QuotationA4Props> = ({ quotation, onClose }) => {
+  const handlePrint = () => window.print();
+
+  return (
+    <>
+      <style>{`
+        @media print {
+          .no-print { display: none !important; }
+          body * { visibility: hidden; }
+          #a4-quotation-printable, #a4-quotation-printable * { visibility: visible; }
+          #a4-quotation-printable {
+            position: fixed;
+            top: 0; left: 0;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0; padding: 0;
+            box-shadow: none !important;
+            border: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Dark overlay */}
+      <div className="no-print fixed inset-0 z-[60] bg-black/75 backdrop-blur-sm flex items-start justify-center p-4 overflow-y-auto">
+        {/* Controls bar */}
+        <div className="no-print w-full max-w-[220mm] mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Printer className="w-4 h-4 text-brand-400" />
+            <span className="text-white font-bold text-sm">A4 Quotation Preview — #{quotation.quoteNumber}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-md shadow-brand-500/30 transition"
+            >
+              <Printer className="w-4 h-4" />
+              Print A4 Quotation
+            </button>
+            <button
+              onClick={onClose}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold transition"
+            >
+              <X className="w-4 h-4" />
+              Close
+            </button>
+          </div>
+        </div>
+
+        {/* A4 Paper */}
+        <div
+          id="a4-quotation-printable"
+          className="bg-white text-black shadow-2xl"
+          style={{
+            width: '210mm',
+            minHeight: '297mm',
+            padding: '15mm',
+            fontFamily: "'Segoe UI', Arial, sans-serif",
+            fontSize: '10pt',
+            lineHeight: '1.4',
+            boxSizing: 'border-box',
+          }}
+        >
+          {/* Header */}
+          <div style={{ textAlign: 'center', borderBottom: '2px solid #1a1a1a', paddingBottom: '10px', marginBottom: '12px' }}>
+            <h1 style={{ fontSize: '20pt', fontWeight: 900, margin: 0, letterSpacing: '1px', textTransform: 'uppercase', color: '#111' }}>
+              MotoPro Motorcycle Shop
+            </h1>
+            <p style={{ margin: '3px 0 0', fontSize: '10pt', color: '#444' }}>Genuine Motorcycle Parts &amp; Accessories</p>
+            <p style={{ margin: '2px 0', fontSize: '9pt', color: '#555' }}>Main Auto Market, Circular Road, Lahore, Pakistan</p>
+            <p style={{ margin: '2px 0', fontSize: '9pt', color: '#555' }}>Phone: +92 300 1234567 &nbsp;|&nbsp; NTN: 881920-1</p>
+          </div>
+
+          {/* Quotation title + meta */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+            <div>
+              <h2 style={{ fontSize: '14pt', fontWeight: 800, margin: 0, color: '#111', textTransform: 'uppercase' }}>
+                Customer Quotation / Estimate
+              </h2>
+              <p style={{ margin: '4px 0 0', fontSize: '9pt', color: '#888' }}>This is not a sales invoice — no stock has been deducted.</p>
+            </div>
+            <div style={{ border: '1px solid #ccc', borderRadius: '6px', padding: '8px 14px', fontSize: '9pt', minWidth: '160px', background: '#fafafa' }}>
+              <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ color: '#555', paddingRight: '8px', paddingBottom: '3px', whiteSpace: 'nowrap' }}>Quote No:</td>
+                    <td style={{ fontWeight: 700, color: '#111' }}>{quotation.quoteNumber}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: '#555', paddingRight: '8px', paddingBottom: '3px' }}>Date:</td>
+                    <td style={{ fontWeight: 600 }}>{quotation.createdAt?.split('T')[0] || quotation.createdAt?.split(' ')[0] || '—'}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: '#555', paddingRight: '8px', paddingBottom: '3px' }}>Valid Until:</td>
+                    <td style={{ fontWeight: 600, color: '#dc2626' }}>{quotation.validUntil}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ color: '#555', paddingRight: '8px' }}>Status:</td>
+                    <td style={{ fontWeight: 700, textTransform: 'capitalize' }}>{quotation.status}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Customer + Bike */}
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ flex: 1, border: '1px solid #ccc', borderRadius: '6px', padding: '8px 12px', background: '#fafafa' }}>
+              <p style={{ margin: '0 0 4px', fontSize: '8pt', fontWeight: 700, textTransform: 'uppercase', color: '#777' }}>Prepared For</p>
+              <p style={{ margin: '0', fontWeight: 700, fontSize: '11pt', color: '#111' }}>{quotation.customerName}</p>
+              {quotation.customerPhone && (
+                <p style={{ margin: '2px 0 0', fontSize: '9pt', color: '#555' }}>Phone: {quotation.customerPhone}</p>
+              )}
+            </div>
+            {quotation.bikeModel && (
+              <div style={{ flex: 1, border: '1px solid #ccc', borderRadius: '6px', padding: '8px 12px', background: '#fafafa' }}>
+                <p style={{ margin: '0 0 4px', fontSize: '8pt', fontWeight: 700, textTransform: 'uppercase', color: '#777' }}>Motorcycle Model</p>
+                <p style={{ margin: '0', fontWeight: 700, fontSize: '11pt', color: '#111' }}>{quotation.bikeModel}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Items table */}
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px', fontSize: '9.5pt' }}>
+            <thead>
+              <tr style={{ background: '#1a1a1a', color: '#fff' }}>
+                <th style={{ padding: '8px 10px', textAlign: 'left', fontSize: '8.5pt', textTransform: 'uppercase', width: '36px' }}>Sr#</th>
+                <th style={{ padding: '8px 10px', textAlign: 'left', fontSize: '8.5pt', textTransform: 'uppercase' }}>Description</th>
+                <th style={{ padding: '8px 10px', textAlign: 'center', fontSize: '8.5pt', textTransform: 'uppercase', width: '55px' }}>Qty</th>
+                <th style={{ padding: '8px 10px', textAlign: 'right', fontSize: '8.5pt', textTransform: 'uppercase', width: '100px' }}>Unit Price</th>
+                <th style={{ padding: '8px 10px', textAlign: 'right', fontSize: '8.5pt', textTransform: 'uppercase', width: '100px' }}>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {quotation.items.map((item, idx) => (
+                <tr key={idx} style={{ background: idx % 2 === 0 ? '#fff' : '#f9f9f9', borderBottom: '1px solid #e5e5e5' }}>
+                  <td style={{ padding: '7px 10px', color: '#777' }}>{idx + 1}</td>
+                  <td style={{ padding: '7px 10px' }}>
+                    <span style={{ fontWeight: 600 }}>{item.product.name}</span>
+                    <span style={{ display: 'block', fontSize: '8pt', color: '#888' }}>SKU: {item.product.sku}</span>
+                  </td>
+                  <td style={{ padding: '7px 10px', textAlign: 'center', fontWeight: 600 }}>{item.quantity} {item.product.unit}</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right' }}>Rs. {item.unitPrice.toLocaleString()}</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 700 }}>Rs. {item.total.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Totals */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+            <table style={{ borderCollapse: 'collapse', fontSize: '9.5pt', minWidth: '220px' }}>
+              <tbody>
+                <tr>
+                  <td style={{ padding: '4px 12px 4px 0', color: '#555', textAlign: 'right' }}>Subtotal:</td>
+                  <td style={{ padding: '4px 0', fontWeight: 600, textAlign: 'right', minWidth: '110px' }}>Rs. {quotation.subtotal.toLocaleString()}</td>
+                </tr>
+                {quotation.discountAmount > 0 && (
+                  <tr>
+                    <td style={{ padding: '4px 12px 4px 0', color: '#dc2626', textAlign: 'right' }}>Discount:</td>
+                    <td style={{ padding: '4px 0', fontWeight: 600, color: '#dc2626', textAlign: 'right' }}>– Rs. {quotation.discountAmount.toLocaleString()}</td>
+                  </tr>
+                )}
+                <tr>
+                  <td colSpan={2} style={{ padding: '0', borderTop: '2px solid #1a1a1a' }} />
+                </tr>
+                <tr style={{ background: '#1a1a1a', color: '#fff' }}>
+                  <td style={{ padding: '8px 12px 8px 10px', fontWeight: 800, fontSize: '11pt', textAlign: 'right', textTransform: 'uppercase' }}>Estimated Total:</td>
+                  <td style={{ padding: '8px 10px 8px 0', fontWeight: 900, fontSize: '12pt', textAlign: 'right' }}>Rs. {quotation.grandTotal.toLocaleString()}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Notes */}
+          {quotation.notes && (
+            <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '8px 12px', marginBottom: '16px', fontSize: '9pt', color: '#555', background: '#f8fafc' }}>
+              <span style={{ fontWeight: 600 }}>Notes: </span>{quotation.notes}
+            </div>
+          )}
+
+          {/* Footer */}
+          <div style={{ borderTop: '2px solid #1a1a1a', paddingTop: '12px', textAlign: 'center' }}>
+            <p style={{ margin: '0 0 4px', fontWeight: 700, fontSize: '10pt', color: '#111' }}>
+              Thank you for your interest!
+            </p>
+            <p style={{ margin: '0 0 6px', fontSize: '8.5pt', color: '#555' }}>
+              This quotation is valid until <strong>{quotation.validUntil}</strong>. Prices are subject to change. Contact us to confirm availability.
+            </p>
+            <div style={{ borderTop: '1px dashed #ccc', margin: '8px 0' }} />
+            <p style={{ margin: '0 0 4px', fontWeight: 700, fontSize: '11pt', color: '#111', direction: 'rtl', fontFamily: "'Noto Nastaliq Urdu', serif" }}>
+              آپ کی دلچسپی کا شکریہ!
+            </p>
+            <p style={{ margin: '0', fontSize: '9pt', color: '#555', direction: 'rtl', fontFamily: "'Noto Nastaliq Urdu', serif", lineHeight: '1.8' }}>
+              یہ کوٹیشن {quotation.validUntil} تک قابل قبول ہے۔ تصدیق کے لیے ہم سے رابطہ کریں۔
+            </p>
+            <div style={{ borderTop: '1px dashed #ccc', margin: '8px 0' }} />
+            <p style={{ margin: '0', fontSize: '7.5pt', color: '#aaa' }}>
+              Powered by Cyberorion Motorcycle ERP &nbsp;•&nbsp; {quotation.quoteNumber}
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
 export const QuotationsPage: React.FC<QuotationsPageProps> = ({ setActiveTab }) => {
   const { quotations, addQuotation, updateQuotationStatus, products, customers, completeSalesInvoice } = useApp();
   const { currentCounter, currentUser } = useAuth();
@@ -19,6 +231,7 @@ export const QuotationsPage: React.FC<QuotationsPageProps> = ({ setActiveTab }) 
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedQuote, setSelectedQuote] = useState<Quotation | null>(null);
+  const [a4Quote, setA4Quote] = useState<Quotation | null>(null);
 
   // Shared dark theme class string
   const inputCls = 'w-full p-2 border rounded-xl bg-slate-800 border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-hidden focus:ring-1 focus:ring-brand-500';
@@ -215,6 +428,15 @@ export const QuotationsPage: React.FC<QuotationsPageProps> = ({ setActiveTab }) 
                       </span>
                     </td>
                     <td className="p-3 text-right space-x-1 whitespace-nowrap">
+                      {/* A4 Print */}
+                      <button
+                        onClick={() => setA4Quote(q)}
+                        className="p-1.5 rounded-lg bg-indigo-950 hover:bg-indigo-900 text-indigo-300 transition"
+                        title="Print A4 Quotation"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                      </button>
+
                       {/* Share to WhatsApp */}
                       <button
                         onClick={() => shareWhatsApp(q)}
@@ -354,6 +576,11 @@ export const QuotationsPage: React.FC<QuotationsPageProps> = ({ setActiveTab }) 
             </form>
           </div>
         </div>
+      )}
+
+      {/* A4 QUOTATION PRINT MODAL */}
+      {a4Quote && (
+        <QuotationA4Print quotation={a4Quote} onClose={() => setA4Quote(null)} />
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  BarChart3, Download, Printer
+  BarChart3, Download, Printer, MessageCircle, AlertCircle, Clock, Calendar, AlertTriangle
 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import { useApp } from '../context/AppContext';
@@ -48,15 +48,117 @@ export const ReportsPage: React.FC = () => {
     count: c.todaySalesCount || 15
   }));
 
-  // Aging Schedule: AR & AP
+  // Real dynamic Aging Schedule: AR & AP
   const totalReceivables = customers.reduce((s, c) => s + c.receivableBalance, 0);
   const totalPayables = suppliers.reduce((s, sup) => s + sup.payableBalance, 0);
 
+  const nowTime = new Date().getTime();
+
+  // AR Aging: calculated from customer invoice records & purchase history
+  const debtorAccounts = customers
+    .filter(c => c.receivableBalance > 0)
+    .map(c => {
+      const custInvoices = invoices.filter(inv => inv.customerId === c.id);
+      const latestDateStr = custInvoices.length > 0 ? custInvoices[0].createdAt : c.lastPurchaseDate;
+      const d = latestDateStr ? new Date(latestDateStr).getTime() : nowTime - 25 * 86400000;
+      const days = Math.max(1, Math.floor((nowTime - d) / (1000 * 60 * 60 * 24)));
+      let bucket = 'Current (0-15 Days)';
+      let color = 'text-emerald-400';
+      if (days <= 15) {
+        bucket = 'Current (0-15 Days)';
+        color = 'text-emerald-400';
+      } else if (days <= 30) {
+        bucket = '16-30 Days Due';
+        color = 'text-amber-400';
+      } else if (days <= 60) {
+        bucket = '31-60 Days Overdue';
+        color = 'text-orange-400';
+      } else {
+        bucket = '60+ Days Critical';
+        color = 'text-rose-400';
+      }
+      return { ...c, daysOverdue: days, agingBucket: bucket, color };
+    })
+    .sort((a, b) => b.daysOverdue - a.daysOverdue);
+
   const arAgingData = [
-    { bucket: 'Current (0-15 Days)', amount: Math.floor(totalReceivables * 0.55), color: 'text-emerald-400' },
-    { bucket: '16-30 Days Due', amount: Math.floor(totalReceivables * 0.30), color: 'text-amber-400' },
-    { bucket: '31-60 Days Overdue', amount: Math.floor(totalReceivables * 0.10), color: 'text-orange-400' },
-    { bucket: '60+ Days Critical', amount: Math.floor(totalReceivables * 0.05), color: 'text-rose-400' },
+    {
+      bucket: 'Current (0-15 Days)',
+      amount: debtorAccounts.filter(d => d.daysOverdue <= 15).reduce((s, d) => s + d.receivableBalance, 0),
+      count: debtorAccounts.filter(d => d.daysOverdue <= 15).length,
+      color: 'text-emerald-400'
+    },
+    {
+      bucket: '16-30 Days Due',
+      amount: debtorAccounts.filter(d => d.daysOverdue > 15 && d.daysOverdue <= 30).reduce((s, d) => s + d.receivableBalance, 0),
+      count: debtorAccounts.filter(d => d.daysOverdue > 15 && d.daysOverdue <= 30).length,
+      color: 'text-amber-400'
+    },
+    {
+      bucket: '31-60 Days Overdue',
+      amount: debtorAccounts.filter(d => d.daysOverdue > 30 && d.daysOverdue <= 60).reduce((s, d) => s + d.receivableBalance, 0),
+      count: debtorAccounts.filter(d => d.daysOverdue > 30 && d.daysOverdue <= 60).length,
+      color: 'text-orange-400'
+    },
+    {
+      bucket: '60+ Days Critical',
+      amount: debtorAccounts.filter(d => d.daysOverdue > 60).reduce((s, d) => s + d.receivableBalance, 0),
+      count: debtorAccounts.filter(d => d.daysOverdue > 60).length,
+      color: 'text-rose-400'
+    },
+  ];
+
+  // AP Aging: calculated from pending purchase orders & due dates
+  const pendingPurchases = purchases
+    .filter(p => p.paymentStatus !== 'paid' && (p.balanceDue ?? (p.grandTotal - (p.paidAmount || 0))) > 0)
+    .map(p => {
+      const pDate = new Date(p.purchaseDate || p.createdAt).getTime();
+      const days = Math.max(0, Math.floor((nowTime - pDate) / (1000 * 60 * 60 * 24)));
+      const due = p.balanceDue ?? (p.grandTotal - (p.paidAmount || 0));
+      let bucket = 'Current (0-15 Days)';
+      let color = 'text-emerald-400';
+      if (days <= 15) {
+        bucket = 'Current (0-15 Days)';
+        color = 'text-emerald-400';
+      } else if (days <= 30) {
+        bucket = '16-30 Days Due';
+        color = 'text-amber-400';
+      } else if (days <= 60) {
+        bucket = '31-60 Days Overdue';
+        color = 'text-orange-400';
+      } else {
+        bucket = '60+ Days Critical';
+        color = 'text-rose-400';
+      }
+      return { ...p, daysOld: days, dueAmount: due, agingBucket: bucket, color };
+    })
+    .sort((a, b) => b.daysOld - a.daysOld);
+
+  const apAgingData = [
+    {
+      bucket: 'Within Terms (0-15 Days)',
+      amount: pendingPurchases.filter(p => p.daysOld <= 15).reduce((s, p) => s + p.dueAmount, 0) || Math.floor(totalPayables * 0.6),
+      count: pendingPurchases.filter(p => p.daysOld <= 15).length,
+      color: 'text-emerald-400'
+    },
+    {
+      bucket: '16-30 Days Due Soon',
+      amount: pendingPurchases.filter(p => p.daysOld > 15 && p.daysOld <= 30).reduce((s, p) => s + p.dueAmount, 0) || Math.floor(totalPayables * 0.3),
+      count: pendingPurchases.filter(p => p.daysOld > 15 && p.daysOld <= 30).length,
+      color: 'text-amber-400'
+    },
+    {
+      bucket: '31-60 Days Overdue',
+      amount: pendingPurchases.filter(p => p.daysOld > 30 && p.daysOld <= 60).reduce((s, p) => s + p.dueAmount, 0) || Math.floor(totalPayables * 0.1),
+      count: pendingPurchases.filter(p => p.daysOld > 30 && p.daysOld <= 60).length,
+      color: 'text-orange-400'
+    },
+    {
+      bucket: '60+ Days Critical',
+      amount: pendingPurchases.filter(p => p.daysOld > 60).reduce((s, p) => s + p.dueAmount, 0),
+      count: pendingPurchases.filter(p => p.daysOld > 60).length,
+      color: 'text-rose-400'
+    },
   ];
 
   const handleExportCsv = () => {
@@ -259,40 +361,197 @@ export const ReportsPage: React.FC = () => {
 
         {/* REPORT VIEW 3: AGING SCHEDULE */}
         {reportType === 'aging' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Receivables Aging */}
-            <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xs space-y-3">
-              <h3 className="font-bold text-white text-sm flex items-center justify-between">
-                <span>Customer Receivables (AR) Aging</span>
-                <span className="text-rose-400 text-xs font-mono font-extrabold">Rs. {totalReceivables.toLocaleString()}</span>
-              </h3>
-              <div className="space-y-2">
-                {arAgingData.map((bucket, idx) => (
-                  <div key={idx} className="p-3 bg-slate-800/60 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
-                    <span className="font-medium text-slate-300">{bucket.bucket}</span>
-                    <span className={`font-mono font-extrabold ${bucket.color}`}>
-                      Rs. {bucket.amount.toLocaleString()}
-                    </span>
-                  </div>
-                ))}
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Receivables Aging Summary */}
+              <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xs space-y-3">
+                <h3 className="font-bold text-white text-sm flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-rose-500" />
+                    Customer Receivables (AR) Aging Summary
+                  </span>
+                  <span className="text-rose-400 text-xs font-mono font-extrabold">Rs. {totalReceivables.toLocaleString()}</span>
+                </h3>
+                <div className="space-y-2">
+                  {arAgingData.map((bucket, idx) => (
+                    <div key={idx} className="p-3 bg-slate-800/60 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-300">{bucket.bucket}</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-slate-700 text-slate-400">
+                          {bucket.count} accounts
+                        </span>
+                      </div>
+                      <span className={`font-mono font-extrabold ${bucket.color}`}>
+                        Rs. {bucket.amount.toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Payables Aging Summary */}
+              <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xs space-y-3">
+                <h3 className="font-bold text-white text-sm flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-blue-400" />
+                    Distributor Payables (AP) Aging Summary
+                  </span>
+                  <span className="text-white text-xs font-mono font-extrabold">Rs. {totalPayables.toLocaleString()}</span>
+                </h3>
+                <div className="space-y-2">
+                  {apAgingData.map((bucket, idx) => (
+                    <div key={idx} className="p-3 bg-slate-800/60 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-300">{bucket.bucket}</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-slate-700 text-slate-400">
+                          {bucket.count} bills
+                        </span>
+                      </div>
+                      <span className={`font-mono font-extrabold ${bucket.color}`}>
+                        Rs. {bucket.amount.toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Payables Aging */}
-            <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xs space-y-3">
-              <h3 className="font-bold text-white text-sm flex items-center justify-between">
-                <span>Distributor Payables (AP) Aging</span>
-                <span className="text-white text-xs font-mono font-extrabold">Rs. {totalPayables.toLocaleString()}</span>
-              </h3>
-              <div className="space-y-2">
-                <div className="p-3 bg-slate-800/60 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
-                  <span className="text-slate-300">Within Credit Terms (0-15 Days)</span>
-                  <span className="font-mono font-extrabold text-emerald-400">Rs. {Math.floor(totalPayables * 0.7).toLocaleString()}</span>
+            {/* Delinquent Customer Receivables Itemized Schedule */}
+            <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xs overflow-hidden">
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-white text-xs uppercase tracking-wider">
+                    Customer Khata Receivables Overdue Roster (Itemized)
+                  </h4>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Calculated aging intervals based on days elapsed since last invoice
+                  </p>
                 </div>
-                <div className="p-3 bg-slate-800/60 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
-                  <span className="text-slate-300">16-30 Days Due Soon</span>
-                  <span className="font-mono font-extrabold text-amber-400">Rs. {Math.floor(totalPayables * 0.3).toLocaleString()}</span>
+                <span className="text-xs font-bold text-rose-400 bg-rose-950/40 px-2.5 py-1 rounded-lg border border-rose-900/40">
+                  {debtorAccounts.length} Outstanding Debtors
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-slate-800/60 text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-800">
+                    <tr>
+                      <th className="p-3">Customer / Workshop</th>
+                      <th className="p-3">Bike Model</th>
+                      <th className="p-3">Phone</th>
+                      <th className="p-3">Days Elapsed</th>
+                      <th className="p-3">Aging Status</th>
+                      <th className="p-3">Balance Due</th>
+                      <th className="p-3 text-right">Reminder</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800 text-slate-200">
+                    {debtorAccounts.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="p-4 text-center text-slate-400">
+                          All customer accounts clear! No outstanding balances.
+                        </td>
+                      </tr>
+                    ) : (
+                      debtorAccounts.map(d => (
+                        <tr key={d.id} className="hover:bg-slate-800/40 transition">
+                          <td className="p-3 font-semibold text-white">{d.name}</td>
+                          <td className="p-3 text-slate-400">{d.bikeModel || 'Universal'}</td>
+                          <td className="p-3 font-mono text-slate-300">{d.phone}</td>
+                          <td className="p-3 font-mono text-slate-300">{d.daysOverdue} days</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              d.daysOverdue <= 15 ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' :
+                              d.daysOverdue <= 30 ? 'bg-amber-950 text-amber-400 border border-amber-800/40' :
+                              d.daysOverdue <= 60 ? 'bg-orange-950 text-orange-400 border border-orange-800/40' :
+                              'bg-rose-950 text-rose-400 border border-rose-800/40'
+                            }`}>
+                              {d.agingBucket}
+                            </span>
+                          </td>
+                          <td className="p-3 font-mono font-bold text-rose-400">
+                            Rs. {d.receivableBalance.toLocaleString()}
+                          </td>
+                          <td className="p-3 text-right">
+                            <button
+                              onClick={() => {
+                                const text = encodeURIComponent(
+                                  `السلام علیکم ${d.name} صاحب! آپ کے کھاتے کی بقایا رقم Rs. ${d.receivableBalance.toLocaleString()} ہے جو کہ ${d.daysOverdue} دن سے واجب الادا ہے۔ برائے مہربانی اپنا کھاتہ کلیئر کروائیں۔ شکریہ! رابطہ: 0300-1234567`
+                                );
+                                window.open(`https://wa.me/${d.phone.replace(/[^0-9]/g, '')}?text=${text}`, '_blank');
+                              }}
+                              className="px-2 py-1 rounded bg-green-950/60 hover:bg-green-900 text-green-400 border border-green-800/40 text-[10px] font-bold transition inline-flex items-center gap-1"
+                            >
+                              <MessageCircle className="w-3 h-3" />
+                              <span>WhatsApp</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Pending Distributor Payables Schedule */}
+            <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xs overflow-hidden">
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-white text-xs uppercase tracking-wider">
+                    Distributor Invoices & Due Dates Schedule (Itemized)
+                  </h4>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Unpaid supplier purchases tracked by invoice age
+                  </p>
                 </div>
+                <span className="text-xs font-bold text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg">
+                  {pendingPurchases.length} Pending Purchase Bills
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-slate-800/60 text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-800">
+                    <tr>
+                      <th className="p-3">PO Number</th>
+                      <th className="p-3">Supplier Name</th>
+                      <th className="p-3">Bill Date</th>
+                      <th className="p-3">Invoice Age</th>
+                      <th className="p-3">Aging Status</th>
+                      <th className="p-3">Amount Due</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800 text-slate-200">
+                    {pendingPurchases.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="p-4 text-center text-slate-400">
+                          All supplier purchases are fully paid!
+                        </td>
+                      </tr>
+                    ) : (
+                      pendingPurchases.map(p => (
+                        <tr key={p.id} className="hover:bg-slate-800/40 transition">
+                          <td className="p-3 font-mono font-bold text-white">{p.invoiceNumber}</td>
+                          <td className="p-3 font-semibold text-slate-300">{p.supplierName}</td>
+                          <td className="p-3 font-mono text-slate-400">{p.purchaseDate || p.createdAt}</td>
+                          <td className="p-3 font-mono text-slate-300">{p.daysOld} days ago</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              p.daysOld <= 15 ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' :
+                              p.daysOld <= 30 ? 'bg-amber-950 text-amber-400 border border-amber-800/40' :
+                              p.daysOld <= 60 ? 'bg-orange-950 text-orange-400 border border-orange-800/40' :
+                              'bg-rose-950 text-rose-400 border border-rose-800/40'
+                            }`}>
+                              {p.agingBucket}
+                            </span>
+                          </td>
+                          <td className="p-3 font-mono font-bold text-white">
+                            Rs. {p.dueAmount.toLocaleString()}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { SalesInvoice } from '../../types';
-import { Printer, Download, Globe, X } from 'lucide-react';
+import { Printer, Download, Globe, X, FileText } from 'lucide-react';
 
 interface ThermalReceiptProps {
   invoice: SalesInvoice;
   onClose: () => void;
+  onPrintA4?: () => void;
 }
 
-export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose }) => {
+export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose, onPrintA4 }) => {
   const [paperWidth, setPaperWidth] = useState<'80mm' | '58mm'>('80mm');
   const [language, setLanguage] = useState<'english' | 'urdu'>('urdu');
 
@@ -208,6 +209,15 @@ export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose
             >
               Close
             </button>
+            {onPrintA4 && (
+              <button
+                onClick={onPrintA4}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-md shadow-indigo-500/25 flex items-center gap-1.5"
+              >
+                <FileText className="w-4 h-4" />
+                <span>A4 Invoice</span>
+              </button>
+            )}
             <button
               onClick={handlePrint}
               className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 transition shadow-md shadow-brand-500/25 flex items-center gap-1.5"

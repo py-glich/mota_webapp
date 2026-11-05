@@ -11,7 +11,8 @@ import { useApp } from '../../context/AppContext';
 export type ActiveTab = 
   | 'dashboard' | 'pos' | 'products' | 'inventory' | 'purchases' 
   | 'customers' | 'suppliers' | 'quotations' | 'accounting' | 'reports' 
-  | 'marketing' | 'users' | 'audit' | 'backup' | 'returns' | 'loyalty' | 'counters' | 'permissions';
+  | 'marketing' | 'users' | 'audit' | 'backup' | 'returns' | 'loyalty' | 'counters' | 'permissions'
+  | 'settings';
 
 interface SidebarProps {
   activeTab: ActiveTab;
@@ -53,7 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'users' as ActiveTab, label: 'Users', icon: UserCheck, hasSubmenu: true, permission: 'canManageUsers' as const },
     { id: 'permissions' as ActiveTab, label: 'Permissions', icon: ShieldCheck, hasSubmenu: false, permission: 'canManageUsers' as const },
     { id: 'audit' as ActiveTab, label: 'Audit Logs', icon: FileClock, hasSubmenu: true },
-    { id: 'backup' as ActiveTab, label: 'Settings & DB', icon: Settings, hasSubmenu: true },
+    { id: 'settings' as ActiveTab, label: 'Settings', icon: Settings, hasSubmenu: true },
   ];
 
   const handleNavClick = (tabId: ActiveTab) => {

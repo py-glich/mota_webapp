@@ -3,7 +3,7 @@ import {
   MessageSquare, Send, Plus, MessageCircle, X, Smartphone, 
   Radio, Settings, CheckCircle2, AlertCircle, Users, Search, 
   Copy, Check, Zap, CreditCard, Globe, RefreshCw, Sparkles, 
-  ChevronRight, PhoneCall, History, CheckCheck
+  ChevronRight, PhoneCall, History, CheckCheck, Gift
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
@@ -112,6 +112,24 @@ export const MarketingPage: React.FC = () => {
       label: 'Engine Oil & Tuning Promotion',
       category: 'offer' as const,
       text: 'Special Offer for {customer_name}! Get 15% OFF on Shell & Havoline 4T Engine Oils + Free Brake inspection at MotoPro Auto Parts this week! Call 0300-1234567.'
+    },
+    {
+      id: 'repeat_voucher',
+      label: 'Repeat Customer 10% Voucher',
+      category: 'offer' as const,
+      text: 'Thank you for choosing MotoPro {customer_name}! As our valued repeat customer, enjoy 10% OFF with code MOTO10 on your next parts or servicing. Valid till Sunday!'
+    },
+    {
+      id: 'cd70_tuning',
+      label: 'Honda CD70 Complete Tuning Package',
+      category: 'offer' as const,
+      text: 'Special for {customer_name} (CD70)! Complete tuning, oil change + tappet adjustment package for only Rs. 990 at MotoPro Auto Parts this weekend! Visit today.'
+    },
+    {
+      id: 'cg125_sprocket',
+      label: 'Honda CG125 Sprocket & Chain Promo',
+      category: 'offer' as const,
+      text: 'Exclusive offer for {customer_name}! Genuine CG125 Chain Sprocket kits + free fitting at MotoPro Workshop this week. Limited stock. Contact: 0300-1234567.'
     }
   ];
 
@@ -132,6 +150,21 @@ export const MarketingPage: React.FC = () => {
     }
     if (smsTargetAudience === 'VIP Loyalty Members') {
       return customers.filter(c => (c.loyaltyPoints || 0) >= 50).length || 1;
+    }
+    if (smsTargetAudience === 'Honda CD70 Riders') {
+      return customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('cd70')).length || 1;
+    }
+    if (smsTargetAudience === 'Honda CG125 Riders') {
+      return customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('125')).length || 1;
+    }
+    if (smsTargetAudience === 'Yamaha YBR125 Riders') {
+      return customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('ybr')).length || 1;
+    }
+    if (smsTargetAudience === 'Suzuki GS150 Riders') {
+      return customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('gs')).length || 1;
+    }
+    if (smsTargetAudience === 'Repeat Customers (3+ Purchases)') {
+      return customers.filter(c => (c.totalPurchases && c.totalPurchases > 10000) || (c.loyaltyPoints && c.loyaltyPoints > 20)).length || 1;
     }
     return customers.length || 1;
   };
@@ -449,6 +482,81 @@ export const MarketingPage: React.FC = () => {
               </div>
             </div>
 
+            {/* REPEAT CUSTOMER OFFERS & PROMOTIONS HUB */}
+            <div className="bg-[#111622] rounded-2xl border border-[#1E2638] shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-[#1E2638] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    Repeat Customer Offers & Promotional Deals
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Reward returning motorcycle owners & workshop mechanics with exclusive promo vouchers & service discounts.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-amber-400 font-bold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                    {customers.filter(c => (c.totalPurchases && c.totalPurchases > 10000) || (c.loyaltyPoints && c.loyaltyPoints > 20)).length} High-Value Repeat Buyers
+                  </span>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-[#0D111A] text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-[#1E2638]">
+                    <tr>
+                      <th className="p-3.5">Repeat Customer</th>
+                      <th className="p-3.5">Bike Model</th>
+                      <th className="p-3.5">Total Spent</th>
+                      <th className="p-3.5">Loyalty Tier</th>
+                      <th className="p-3.5">Available Promo Offer</th>
+                      <th className="p-3.5 text-right">Send Offer</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#182030]">
+                    {customers.filter(c => (c.totalPurchases && c.totalPurchases > 10000) || (c.loyaltyPoints && c.loyaltyPoints > 20)).map(cust => (
+                      <tr key={cust.id} className="hover:bg-[#161D2C] transition">
+                        <td className="p-3.5 font-bold text-white">
+                          <div>{cust.name}</div>
+                          <div className="text-[10px] text-slate-400 font-normal">{cust.phone}</div>
+                        </td>
+                        <td className="p-3.5 text-slate-300">
+                          {cust.bikeModel || 'Universal'}
+                        </td>
+                        <td className="p-3.5 font-mono text-emerald-400 font-bold">
+                          Rs. {cust.totalPurchases.toLocaleString()}
+                        </td>
+                        <td className="p-3.5">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-950 text-amber-300 border border-amber-800/40">
+                            {cust.loyaltyTier || 'Bronze'}
+                          </span>
+                        </td>
+                        <td className="p-3.5">
+                          <span className="text-[11px] font-mono text-rose-300 bg-rose-950/40 px-2 py-0.5 rounded border border-rose-900/40">
+                            10% OFF Code: MOTO10
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-right">
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const msg = `Dear ${cust.name}! As a valued repeat customer at MotoPro Auto Parts, enjoy 10% OFF with voucher code MOTO10 on your next purchase or oil change! Valid till Sunday. Call: 0300-1234567.`;
+                              await sendSms(cust.phone, cust.name, msg, 'offer', cust.id);
+                              alert(`10% Promo voucher dispatched to ${cust.name} (${cust.phone})!`);
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-sm transition"
+                          >
+                            <Gift className="w-3 h-3" />
+                            <span>Send Promo SMS</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             {/* BULK SMS CAMPAIGN COMPOSER */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Form & Composer (7 cols) */}
@@ -487,6 +595,11 @@ export const MarketingPage: React.FC = () => {
                       <option value="Debtors Only">Khata Debtors Only ({debtorCustomers.length} Contacts)</option>
                       <option value="Mechanics & Workshops">Mechanics & Workshops ({customers.filter(c => c.group === 'Mechanic').length} Contacts)</option>
                       <option value="VIP Loyalty Members">VIP Loyalty Club Members ({customers.filter(c => (c.loyaltyPoints || 0) >= 50).length} Contacts)</option>
+                      <option value="Repeat Customers (3+ Purchases)">⭐ Repeat Customers ({customers.filter(c => (c.totalPurchases && c.totalPurchases > 10000) || (c.loyaltyPoints && c.loyaltyPoints > 20)).length} Contacts)</option>
+                      <option value="Honda CD70 Riders">🏍️ Honda CD70 Riders ({customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('cd70')).length} Contacts)</option>
+                      <option value="Honda CG125 Riders">🏍️ Honda CG125 Riders ({customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('125')).length} Contacts)</option>
+                      <option value="Yamaha YBR125 Riders">🏍️ Yamaha YBR125 Riders ({customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('ybr')).length} Contacts)</option>
+                      <option value="Suzuki GS150 Riders">🏍️ Suzuki GS150 Riders ({customers.filter(c => c.bikeModel && c.bikeModel.toLowerCase().includes('gs')).length} Contacts)</option>
                     </select>
                   </div>
 
