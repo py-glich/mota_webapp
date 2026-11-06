@@ -1661,6 +1661,42 @@
   "shiftClosings": [],
   "auditLogs": [
     {
+      "id": "AUD-1793944501296-874",
+      "timestamp": "2026-11-06 05:55:01",
+      "userId": "SYS",
+      "userName": "Faizan Ilyas",
+      "userRole": "owner",
+      "counterName": "Server Central",
+      "module": "Users",
+      "action": "User Login",
+      "severity": "info",
+      "details": "Faizan Ilyas logged in successfully"
+    },
+    {
+      "id": "AUD-1793944490564-284",
+      "timestamp": "2026-11-06 05:54:50",
+      "userId": "SYS",
+      "userName": "Faizan Ilyas",
+      "userRole": "owner",
+      "counterName": "Server Central",
+      "module": "Users",
+      "action": "User Login",
+      "severity": "info",
+      "details": "Faizan Ilyas logged in successfully"
+    },
+    {
+      "id": "AUD-1793944469106-98",
+      "timestamp": "2026-11-06 05:54:29",
+      "userId": "SYS",
+      "userName": "Faizan Ilyas",
+      "userRole": "owner",
+      "counterName": "Server Central",
+      "module": "Users",
+      "action": "User Login",
+      "severity": "info",
+      "details": "Faizan Ilyas logged in successfully"
+    },
+    {
       "_id": "6ae9c4e66d92685998622278",
       "id": "AUD-001",
       "timestamp": "2026-11-02 08:55:12",
@@ -1757,7 +1793,8 @@
       },
       "createdAt": "2026-11-03T10:42:28.550Z",
       "updatedAt": "2026-11-03T10:42:28.550Z",
-      "__v": 0
+      "__v": 0,
+      "lastLogin": "2026-11-06 05:55:01"
     },
     {
       "_id": "6ae9c4e66d9268599862227d",
