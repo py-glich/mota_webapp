@@ -30,7 +30,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -62,7 +62,7 @@
       "isArchived": false,
       "damagedStock": 1,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -95,7 +95,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -128,7 +128,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -162,7 +162,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -195,7 +195,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -228,7 +228,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -262,7 +262,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -294,7 +294,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -324,7 +324,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -356,7 +356,7 @@
       "isArchived": false,
       "damagedStock": 2,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -388,7 +388,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:00:22.806Z",
+      "updatedAt": "2026-11-05T10:21:15.913Z",
       "__v": 0
     },
     {
@@ -1661,42 +1661,6 @@
   "shiftClosings": [],
   "auditLogs": [
     {
-      "id": "AUD-1793874075903-584",
-      "timestamp": "2026-11-05 10:21:15",
-      "userId": "SYS",
-      "userName": "Faizan Ilyas",
-      "userRole": "owner",
-      "counterName": "Server Central",
-      "module": "Users",
-      "action": "User Login",
-      "severity": "info",
-      "details": "Faizan Ilyas logged in successfully"
-    },
-    {
-      "id": "AUD-1793874013654-9",
-      "timestamp": "2026-11-05 10:20:13",
-      "userId": "SYS",
-      "userName": "Automated Backup Daemon",
-      "userRole": "system",
-      "counterName": "Server",
-      "module": "Settings",
-      "action": "Cloud Backup Failed",
-      "severity": "critical",
-      "details": "Automated Cloud Backup Failure: Remote cloud endpoint unreachable (Timeout 504). Please verify network connection or manual export."
-    },
-    {
-      "id": "AUD-1793873997191-624",
-      "timestamp": "2026-11-05 10:19:57",
-      "userId": "SYS",
-      "userName": "Automated Backup Daemon",
-      "userRole": "system",
-      "counterName": "Server",
-      "module": "Settings",
-      "action": "Cloud Backup Succeeded",
-      "severity": "info",
-      "details": "Encrypted cloud snapshot CBK-1793873997190 created (31 records synced)"
-    },
-    {
       "_id": "6ae9c4e66d92685998622278",
       "id": "AUD-001",
       "timestamp": "2026-11-02 08:55:12",
@@ -1793,8 +1757,7 @@
       },
       "createdAt": "2026-11-03T10:42:28.550Z",
       "updatedAt": "2026-11-03T10:42:28.550Z",
-      "__v": 0,
-      "lastLogin": "2026-11-05 10:21:15"
+      "__v": 0
     },
     {
       "_id": "6ae9c4e66d9268599862227d",

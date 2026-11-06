@@ -405,6 +405,17 @@ export const PosPage: React.FC = () => {
                     </span>
                   </div>
 
+                  {/* Product Image if available */}
+                  {product.imageUrl && (
+                    <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shrink-0">
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                    </div>
+                  )}
+
                   {/* Product Name */}
                   <div className="flex-1">
                     <h4 className="font-semibold text-xs text-white line-clamp-2 group-hover:text-rose-400 transition">

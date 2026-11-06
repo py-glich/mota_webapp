@@ -13,10 +13,12 @@
   },
   "dependencies": {
     "@types/canvas-confetti": "^1.9.0",
+    "@types/jsbarcode": "^3.11.4",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
     "express": "^5.3.0",
+    "jsbarcode": "^3.12.3",
     "lucide-react": "^1.66.0",
     "mongoose": "^9.11.4",
     "react": "^19.3.1",

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
   Package, Search, Plus, Barcode, Edit3, Archive, 
-  Trash2, Upload, Download, AlertTriangle, X, MapPin
+  Trash2, Upload, Download, AlertTriangle, X, MapPin,
+  Image, Camera, PlusCircle, Boxes, CheckCircle2
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
@@ -9,7 +10,7 @@ import { Product } from '../types';
 import { BarcodeLabel } from '../components/common/BarcodeLabel';
 
 export const ProductsPage: React.FC = () => {
-  const { products, categories, brands, addProduct, updateProduct, archiveProduct, deleteProduct, recordDamagedStock, bulkImportProducts } = useApp();
+  const { products, categories, brands, addProduct, updateProduct, archiveProduct, deleteProduct, recordDamagedStock, bulkImportProducts, suppliers, logAudit } = useApp();
   const { hasPermission } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,6 +26,14 @@ export const ProductsPage: React.FC = () => {
   const [damagedQty, setDamagedQty] = useState<number>(1);
   const [damagedReason, setDamagedReason] = useState<string>('Transit / Unpacking breakage');
   const [showImportModal, setShowImportModal] = useState(false);
+
+  // Quick Restock / Stock Management State
+  const [restockProduct, setRestockProduct] = useState<Product | null>(null);
+  const [restockQty, setRestockQty] = useState<number>(10);
+  const [restockReason, setRestockReason] = useState<string>('Supplier Delivery / Purchase');
+  const [restockSupplierId, setRestockSupplierId] = useState<string>('');
+  const [restockCost, setRestockCost] = useState<number>(0);
+  const [restockNotes, setRestockNotes] = useState<string>('');
 
   // Shared dark theme class strings
   const inputCls = 'w-full p-2 border rounded-xl bg-slate-800 border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-hidden focus:ring-1 focus:ring-brand-500';
@@ -51,7 +60,62 @@ export const ProductsPage: React.FC = () => {
     shelf: 'Tier-1',
     bin: 'BIN-01',
     description: '',
+    imageUrl: '',
   });
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 3 * 1024 * 1024) {
+      alert('Image file is too large! Please choose an image smaller than 3MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      setFormData(prev => ({ ...prev, imageUrl: dataUrl }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const openRestockModal = (p: Product) => {
+    setRestockProduct(p);
+    setRestockQty(10);
+    setRestockCost(p.purchasePrice);
+    setRestockReason('Supplier Delivery / Purchase');
+    setRestockSupplierId(suppliers[0]?.id || '');
+    setRestockNotes('');
+  };
+
+  const handleConfirmRestock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!restockProduct) return;
+    if (restockQty <= 0) {
+      alert('Please enter a quantity greater than 0.');
+      return;
+    }
+
+    const newStock = restockProduct.currentStock + restockQty;
+    const updated: Product = {
+      ...restockProduct,
+      currentStock: newStock,
+      purchasePrice: restockCost > 0 ? restockCost : restockProduct.purchasePrice
+    };
+
+    updateProduct(updated);
+
+    const sup = suppliers.find(s => s.id === restockSupplierId);
+    logAudit(
+      'Inventory',
+      'Stock Restocked (+Qty)',
+      `Added +${restockQty} ${restockProduct.unit} to "${restockProduct.name}" (SKU: ${restockProduct.sku}). Old: ${restockProduct.currentStock}, New: ${newStock}. Reason: ${restockReason}${sup ? ` | Supplier: ${sup.companyName}` : ''}${restockNotes ? ` | Note: ${restockNotes}` : ''}`
+    );
+
+    alert(`✅ Stock updated! +${restockQty} ${restockProduct.unit} added to "${restockProduct.name}". New Stock: ${newStock} ${restockProduct.unit}`);
+    setRestockProduct(null);
+  };
 
   const openEditModal = (p: Product) => {
     setEditingProduct(p);
@@ -74,6 +138,7 @@ export const ProductsPage: React.FC = () => {
       shelf: p.location.shelf,
       bin: p.location.bin || '',
       description: p.description || '',
+      imageUrl: p.imageUrl || '',
     });
     setShowAddModal(true);
   };
@@ -99,6 +164,7 @@ export const ProductsPage: React.FC = () => {
       shelf: 'Tier-1',
       bin: 'BIN-01',
       description: '',
+      imageUrl: '',
     });
   };
 
@@ -130,6 +196,7 @@ export const ProductsPage: React.FC = () => {
         bin: formData.bin,
       },
       description: formData.description,
+      imageUrl: formData.imageUrl || undefined,
       isArchived: false,
       damagedStock: 0,
     };
@@ -383,15 +450,30 @@ export const ProductsPage: React.FC = () => {
                     <tr key={p.id} className={`hover:bg-slate-800/50 transition ${p.isArchived ? 'opacity-50 bg-slate-950' : ''}`}>
                       {/* Name & SKU */}
                       <td className="p-3">
-                        <div className="font-bold text-white">{p.name}</div>
-                        {p.urduName && (
-                          <div className="urdu-font text-[11px] text-slate-400">{p.urduName}</div>
-                        )}
-                        <div className="text-[10px] font-mono text-slate-400 flex items-center gap-2 mt-0.5">
-                          <span>SKU: {p.sku}</span>
-                          <span>•</span>
-                          <span>Barcode: {p.barcode}</span>
-                          {p.isArchived && <span className="text-rose-400 font-bold uppercase">(Archived)</span>}
+                        <div className="flex items-start gap-2.5">
+                          {p.imageUrl ? (
+                            <img
+                              src={p.imageUrl}
+                              alt={p.name}
+                              className="w-11 h-11 rounded-lg object-cover border border-slate-700 bg-slate-800 shrink-0 shadow-xs"
+                            />
+                          ) : (
+                            <div className="w-11 h-11 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0 text-slate-500">
+                              <Package className="w-5 h-5 text-slate-500" />
+                            </div>
+                          )}
+                          <div>
+                            <div className="font-bold text-white text-xs">{p.name}</div>
+                            {p.urduName && (
+                              <div className="urdu-font text-[11px] text-slate-400">{p.urduName}</div>
+                            )}
+                            <div className="text-[10px] font-mono text-slate-400 flex items-center gap-2 mt-0.5">
+                              <span>SKU: {p.sku}</span>
+                              <span>•</span>
+                              <span>Barcode: {p.barcode}</span>
+                              {p.isArchived && <span className="text-rose-400 font-bold uppercase">(Archived)</span>}
+                            </div>
+                          </div>
                         </div>
                       </td>
 
@@ -410,18 +492,29 @@ export const ProductsPage: React.FC = () => {
                         <div className="text-[10px] text-slate-400">Shelf: {p.location.shelf} {p.location.bin ? `(${p.location.bin})` : ''}</div>
                       </td>
 
-                      {/* Stock */}
+                      {/* Stock & Quick Add */}
                       <td className="p-3">
-                        <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
-                          isOutOfStock 
-                            ? 'bg-rose-950 text-rose-400' 
-                            : isLowStock 
-                              ? 'bg-amber-950 text-amber-400' 
-                              : 'bg-emerald-950 text-emerald-400'
-                        }`}>
-                          {p.currentStock} {p.unit}
-                        </span>
-                        <div className="text-[10px] text-slate-400 mt-1">Min: {p.minStockAlert}</div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                            isOutOfStock 
+                              ? 'bg-rose-950 text-rose-400 border border-rose-800/40' 
+                              : isLowStock 
+                                ? 'bg-amber-950 text-amber-400 border border-amber-800/40' 
+                                : 'bg-emerald-950 text-emerald-400 border border-emerald-800/40'
+                          }`}>
+                            {p.currentStock} {p.unit}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => openRestockModal(p)}
+                            className="px-2 py-0.5 text-[10px] font-bold bg-brand-600/20 hover:bg-brand-600 text-brand-400 hover:text-white rounded-md border border-brand-500/30 transition flex items-center gap-1 shadow-xs"
+                            title="Quick Restock / Add Quantity"
+                          >
+                            <PlusCircle className="w-3 h-3" />
+                            + Stock
+                          </button>
+                        </div>
+                        <div className="text-[10px] text-slate-400 mt-1">Min Alert: {p.minStockAlert} {p.unit}</div>
                       </td>
 
                       {/* Pricing */}
@@ -441,6 +534,14 @@ export const ProductsPage: React.FC = () => {
 
                       {/* Actions */}
                       <td className="p-3 text-right space-x-1 whitespace-nowrap">
+                        <button
+                          onClick={() => openRestockModal(p)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition"
+                          title="Restock / Add Stock Qty"
+                        >
+                          <Boxes className="w-4 h-4" />
+                        </button>
+
                         <button
                           onClick={() => setBarcodeModalProduct(p)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-brand-500 hover:bg-slate-800 transition"
@@ -507,6 +608,74 @@ export const ProductsPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleSaveProduct} className="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+              {/* Product Photo Upload & Preview Section */}
+              <div className="p-3 bg-slate-800/40 rounded-xl border border-slate-700/80 flex flex-col sm:flex-row gap-4 items-center">
+                <div className="relative group shrink-0">
+                  {formData.imageUrl ? (
+                    <div className="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-brand-500/50 shadow-md">
+                      <img
+                        src={formData.imageUrl}
+                        alt="Product preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, imageUrl: '' })}
+                        className="absolute top-1 right-1 bg-rose-600 hover:bg-rose-500 text-white p-1 rounded-full shadow-md transition"
+                        title="Remove image"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-24 h-24 rounded-xl border-2 border-dashed border-slate-700 flex flex-col items-center justify-center text-slate-500 bg-slate-900/60">
+                      <Image className="w-8 h-8 stroke-[1.5]" />
+                      <span className="text-[10px] mt-1 font-medium text-slate-400">No Image</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 w-full space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5 text-brand-400" />
+                      Product Picture / تصویر اپلوڈ کریں
+                    </label>
+                    {formData.imageUrl && (
+                      <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Image Loaded
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label className="cursor-pointer px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg font-bold text-xs transition flex items-center gap-1.5 shadow-xs">
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose File / Camera</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleImageFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                    <span className="text-slate-400 text-[11px]">or paste Image URL:</span>
+                  </div>
+
+                  <input
+                    type="url"
+                    placeholder="https://example.com/part-photo.jpg"
+                    value={formData.imageUrl}
+                    onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
+                    className={inputCls}
+                  />
+                  <p className="text-[10px] text-slate-400">
+                    Supports JPG, PNG, WebP up to 3MB. Images are saved directly into the database.
+                  </p>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-semibold block mb-1 text-slate-300">Product Title (English):</label>
@@ -739,6 +908,193 @@ export const ProductsPage: React.FC = () => {
                   className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition"
                 >
                   Confirm & Write-off
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* QUICK RESTOCK / ADD QUANTITY MODAL */}
+      {restockProduct && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto" style={{ colorScheme: 'dark' }}>
+          <div className="bg-slate-900 text-slate-100 rounded-2xl shadow-2xl max-w-lg w-full border border-slate-800 p-5 space-y-4 text-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <Boxes className="w-5 h-5 text-emerald-400" />
+                <h3 className="font-bold text-white text-sm">
+                  Quick Stock Management / Add Quantity (اسٹاک کا اضافہ)
+                </h3>
+              </div>
+              <button onClick={() => setRestockProduct(null)} className="p-1 rounded text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Product Summary Header */}
+            <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/80 flex items-center gap-3">
+              {restockProduct.imageUrl ? (
+                <img
+                  src={restockProduct.imageUrl}
+                  alt={restockProduct.name}
+                  className="w-14 h-14 rounded-lg object-cover border border-slate-700 bg-slate-900"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-500">
+                  <Package className="w-6 h-6" />
+                </div>
+              )}
+              <div className="flex-1">
+                <h4 className="font-bold text-white text-sm leading-tight">{restockProduct.name}</h4>
+                {restockProduct.urduName && (
+                  <p className="urdu-font text-xs text-slate-400 mt-0.5">{restockProduct.urduName}</p>
+                )}
+                <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1 font-mono">
+                  <span>SKU: {restockProduct.sku}</span>
+                  <span>•</span>
+                  <span>Rack: {restockProduct.location.rack}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Stock Transformation Counter Card */}
+            <div className="grid grid-cols-3 gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Current Stock</span>
+                <span className="text-base font-extrabold text-slate-300">
+                  {restockProduct.currentStock} <span className="text-xs font-normal">{restockProduct.unit}</span>
+                </span>
+              </div>
+              <div className="border-x border-slate-800 flex flex-col justify-center items-center">
+                <span className="text-[10px] text-emerald-400 uppercase font-bold block">+ Adding Qty</span>
+                <span className="text-base font-extrabold text-emerald-400">
+                  +{restockQty} <span className="text-xs font-normal">{restockProduct.unit}</span>
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] text-brand-400 uppercase font-bold block">New Total Stock</span>
+                <span className="text-base font-extrabold text-brand-400">
+                  {restockProduct.currentStock + restockQty} <span className="text-xs font-normal">{restockProduct.unit}</span>
+                </span>
+              </div>
+            </div>
+
+            <form onSubmit={handleConfirmRestock} className="space-y-3">
+              {/* Quantity Input & Quick Increments */}
+              <div>
+                <label className="font-semibold block mb-1 text-slate-200">
+                  Enter Quantity to Add (+ تعداد شامل کریں):
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={restockQty}
+                    onChange={e => setRestockQty(Math.max(1, parseInt(e.target.value) || 1))}
+                    className={`${inputCls} text-base font-bold text-emerald-400`}
+                  />
+                  <span className="text-slate-400 font-bold text-xs">{restockProduct.unit}</span>
+                </div>
+
+                {/* Quick Add Buttons */}
+                <div className="flex items-center gap-1.5 mt-2">
+                  <span className="text-[10px] text-slate-400 font-semibold mr-1">Quick Add:</span>
+                  {[5, 10, 20, 50, 100].map(inc => (
+                    <button
+                      type="button"
+                      key={inc}
+                      onClick={() => setRestockQty(prev => prev + inc)}
+                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] rounded-lg border border-slate-700 transition active:scale-95"
+                    >
+                      +{inc}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setRestockQty(1)}
+                    className="px-2 py-1 bg-rose-950/60 hover:bg-rose-900/60 text-rose-400 font-bold text-[10px] rounded-lg border border-rose-800/40 transition ml-auto"
+                  >
+                    Reset (1)
+                  </button>
+                </div>
+              </div>
+
+              {/* Purchase Cost & Reason */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-semibold block mb-1 text-slate-300">Unit Cost / Purchase Price (Rs.):</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={restockCost}
+                    onChange={e => setRestockCost(parseFloat(e.target.value) || 0)}
+                    className={inputCls}
+                  />
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">Updates default purchase cost</span>
+                </div>
+
+                <div>
+                  <label className="font-semibold block mb-1 text-slate-300">Restock Reason (وجہ):</label>
+                  <select
+                    value={restockReason}
+                    onChange={e => setRestockReason(e.target.value)}
+                    className={inputCls}
+                  >
+                    <option value="Supplier Purchase / Restock">Supplier Purchase / Restock</option>
+                    <option value="Physical Audit Adjustment">Physical Audit Adjustment</option>
+                    <option value="Customer Return Restock">Customer Return Restock</option>
+                    <option value="Warranty / Replacement Stock">Warranty / Replacement Stock</option>
+                    <option value="Opening Stock Balancing">Opening Stock Balancing</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Supplier Selection */}
+              <div>
+                <label className="font-semibold block mb-1 text-slate-300">Supplier / Vendor (Optional):</label>
+                <select
+                  value={restockSupplierId}
+                  onChange={e => setRestockSupplierId(e.target.value)}
+                  className={inputCls}
+                >
+                  <option value="">-- No Supplier Specified --</option>
+                  {suppliers.map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.companyName} ({s.contactPerson} - {s.phone})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="font-semibold block mb-1 text-slate-300">Notes / Invoice Reference:</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Bill # 4018 from Crown Traders"
+                  value={restockNotes}
+                  onChange={e => setRestockNotes(e.target.value)}
+                  className={inputCls}
+                />
+              </div>
+
+              {/* Modal Buttons */}
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setRestockProduct(null)}
+                  className="px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition shadow-md shadow-emerald-600/30 flex items-center gap-1.5"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Confirm & Add +{restockQty} {restockProduct.unit}</span>
                 </button>
               </div>
             </form>
