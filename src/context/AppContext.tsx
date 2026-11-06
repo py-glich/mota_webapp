@@ -57,6 +57,10 @@ interface AppContextType {
   bulkImportProducts: (items: Partial<Product>[]) => Promise<{ importedCount: number }>;
   refreshFromDatabase: () => Promise<void>;
 
+  // Category actions
+  addCategory: (cat: Omit<Category, 'id' | 'itemCount'>) => Category;
+  deleteCategory: (id: string) => { success: boolean; message: string };
+
   // Sales & POS actions
   completeSalesInvoice: (invoice: Omit<SalesInvoice, 'id' | 'invoiceNumber' | 'createdAt'>) => SalesInvoice;
   voidSalesInvoice: (invoiceId: string, reason: string) => { success: boolean; message: string };
@@ -114,7 +118,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return s ? JSON.parse(s) : INITIAL_PRODUCTS;
   });
 
-  const [categories] = useState<Category[]>(() => {
+  const [categories, setCategories] = useState<Category[]>(() => {
     const s = localStorage.getItem('cyberorion_categories');
     return s ? JSON.parse(s) : INITIAL_CATEGORIES;
   });
@@ -279,6 +283,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const data = await res.json();
 
       if (data.products && Array.isArray(data.products) && data.products.length > 0) setProducts(data.products);
+      if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) setCategories(data.categories);
       if (data.customers && Array.isArray(data.customers)) setCustomers(data.customers);
       if (data.suppliers && Array.isArray(data.suppliers)) setSuppliers(data.suppliers);
       if (data.invoices && Array.isArray(data.invoices)) setInvoices(data.invoices);
@@ -325,6 +330,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Save to localStorage
   useEffect(() => { localStorage.setItem('cyberorion_products', JSON.stringify(products)); }, [products]);
+  useEffect(() => { localStorage.setItem('cyberorion_categories', JSON.stringify(categories)); }, [categories]);
   useEffect(() => { localStorage.setItem('cyberorion_customers', JSON.stringify(customers)); }, [customers]);
   useEffect(() => { localStorage.setItem('cyberorion_suppliers', JSON.stringify(suppliers)); }, [suppliers]);
   useEffect(() => { localStorage.setItem('cyberorion_invoices', JSON.stringify(invoices)); }, [invoices]);
@@ -404,6 +410,44 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }).catch(err => console.warn('Delete sync error:', err));
 
     return { success: true, message: 'Product permanently removed.' };
+  };
+
+  const addCategory = (catData: Omit<Category, 'id' | 'itemCount'>): Category => {
+    const prefix = (catData.name || 'CAT').substring(0, 3).toUpperCase().replace(/[^A-Z]/g, 'CAT');
+    const newId = `CAT-${prefix}-${Date.now().toString().slice(-4)}`;
+    const newCat: Category = {
+      ...catData,
+      id: newId,
+      itemCount: 0
+    };
+    setCategories(prev => [...prev, newCat]);
+    logAudit('Inventory', 'Category Created', `Added category: ${newCat.name} (${newCat.id})`);
+
+    fetch('/api/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ category: newCat, operator: { name: currentUser.name, role: currentUser.role } })
+    }).catch(err => console.warn('Category sync error:', err));
+
+    return newCat;
+  };
+
+  const deleteCategory = (id: string): { success: boolean; message: string } => {
+    const inUse = products.some(p => p.categoryId === id);
+    if (inUse) {
+      logAudit('Inventory', 'Category Delete Blocked', `Category ${id} cannot be removed because products are assigned to it`, 'warning');
+      return { success: false, message: 'Cannot delete category that currently has active products assigned.' };
+    }
+    setCategories(prev => prev.filter(c => c.id !== id));
+    logAudit('Inventory', 'Category Deleted', `Deleted category ${id}`);
+
+    fetch(`/api/categories/${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ operator: { name: currentUser.name, role: currentUser.role } })
+    }).catch(err => console.warn('Category delete sync error:', err));
+
+    return { success: true, message: 'Category removed successfully.' };
   };
 
   const bulkImportProducts = async (items: Partial<Product>[]): Promise<{ importedCount: number }> => {
@@ -1271,6 +1315,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       updateProduct,
       archiveProduct,
       deleteProduct,
+      addCategory,
+      deleteCategory,
       recordStockAdjustment,
       approveStockAdjustment,
       rejectStockAdjustment,

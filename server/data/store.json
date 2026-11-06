@@ -30,7 +30,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -62,7 +62,7 @@
       "isArchived": false,
       "damagedStock": 1,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -95,7 +95,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -128,7 +128,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -162,7 +162,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -195,7 +195,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -228,7 +228,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -262,7 +262,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -294,7 +294,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -324,7 +324,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -356,7 +356,7 @@
       "isArchived": false,
       "damagedStock": 2,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -388,7 +388,7 @@
       "isArchived": false,
       "damagedStock": 0,
       "createdAt": "Tue Nov 03 2026 15:42:28 GMT+0500 (Pakistan Standard Time)",
-      "updatedAt": "2026-11-05T10:21:15.913Z",
+      "updatedAt": "2026-11-06T05:55:01.300Z",
       "__v": 0
     },
     {
@@ -839,6 +839,20 @@
       "urduName": "لوازمات اور ہیلمٹ",
       "itemCount": 3,
       "__v": 0
+    },
+    {
+      "id": "CAT-SHO-1758",
+      "name": "Shocks & Springs 1247",
+      "urduName": "سسپنشن اور جمپ",
+      "description": "Front shocks, hydraulic rear dampers",
+      "itemCount": 0
+    },
+    {
+      "id": "CAT-SHO-1960",
+      "name": "Shocks & Springs 1699",
+      "urduName": "سسپنشن اور جمپ",
+      "description": "Front shocks, hydraulic rear dampers",
+      "itemCount": 0
     }
   ],
   "brands": [
@@ -1661,40 +1675,28 @@
   "shiftClosings": [],
   "auditLogs": [
     {
-      "id": "AUD-1793944501296-874",
-      "timestamp": "2026-11-06 05:55:01",
+      "id": "AUD-1793947831969-186",
+      "timestamp": "2026-11-06 06:50:31",
       "userId": "SYS",
       "userName": "Faizan Ilyas",
       "userRole": "owner",
       "counterName": "Server Central",
-      "module": "Users",
-      "action": "User Login",
+      "module": "Inventory",
+      "action": "Category Created",
       "severity": "info",
-      "details": "Faizan Ilyas logged in successfully"
+      "details": "Added product category: Shocks & Springs 1699 (CAT-SHO-1960)"
     },
     {
-      "id": "AUD-1793944490564-284",
-      "timestamp": "2026-11-06 05:54:50",
+      "id": "AUD-1793947661804-298",
+      "timestamp": "2026-11-06 06:47:41",
       "userId": "SYS",
       "userName": "Faizan Ilyas",
       "userRole": "owner",
       "counterName": "Server Central",
-      "module": "Users",
-      "action": "User Login",
+      "module": "Inventory",
+      "action": "Category Created",
       "severity": "info",
-      "details": "Faizan Ilyas logged in successfully"
-    },
-    {
-      "id": "AUD-1793944469106-98",
-      "timestamp": "2026-11-06 05:54:29",
-      "userId": "SYS",
-      "userName": "Faizan Ilyas",
-      "userRole": "owner",
-      "counterName": "Server Central",
-      "module": "Users",
-      "action": "User Login",
-      "severity": "info",
-      "details": "Faizan Ilyas logged in successfully"
+      "details": "Added product category: Shocks & Springs 1247 (CAT-SHO-1758)"
     },
     {
       "_id": "6ae9c4e66d92685998622278",
@@ -1793,8 +1795,7 @@
       },
       "createdAt": "2026-11-03T10:42:28.550Z",
       "updatedAt": "2026-11-03T10:42:28.550Z",
-      "__v": 0,
-      "lastLogin": "2026-11-06 05:55:01"
+      "__v": 0
     },
     {
       "_id": "6ae9c4e66d9268599862227d",

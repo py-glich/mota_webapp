@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { getDb, updateDb, resetDb, initMongo, mongoStatus, seedMongoFromData, AppDatabase } from './db.js';
 import { 
-  Product, SalesInvoice, PurchaseInvoice, Customer, Supplier, 
+  Product, Category, SalesInvoice, PurchaseInvoice, Customer, Supplier, 
   ExpenseRecord, CashbookEntry, StockAdjustment, DamagedStockRecord, 
   Quotation, SalesReturn, PurchaseReturn, ShiftClosing, AuditLog, User, MarketingCampaign 
 } from '../src/types/index';
@@ -291,6 +291,55 @@ app.post('/api/products/:id/archive', (req: Request, res: Response) => {
   });
   if (!product) return res.status(404).json({ error: 'Product not found' });
   res.json(product);
+});
+
+// Category Management Endpoints
+app.get('/api/categories', (req: Request, res: Response) => {
+  const db = getDb();
+  res.json(db.categories || []);
+});
+
+app.post('/api/categories', (req: Request, res: Response) => {
+  const { category, operator } = req.body;
+  if (!category || !category.name) {
+    return res.status(400).json({ error: 'Category name is required' });
+  }
+
+  const newCat = updateDb(db => {
+    if (!db.categories) db.categories = [];
+    const prefix = category.name.substring(0, 3).toUpperCase().replace(/[^A-Z]/g, 'CAT');
+    const cat: Category = {
+      id: category.id || `CAT-${prefix}-${Date.now().toString().slice(-4)}`,
+      name: category.name,
+      urduName: category.urduName || '',
+      description: category.description || '',
+      itemCount: 0
+    };
+    db.categories.push(cat);
+    logServerAudit(db, 'Inventory', 'Category Created', `Added product category: ${cat.name} (${cat.id})`, operator);
+    return cat;
+  });
+
+  res.status(201).json(newCat);
+});
+
+app.delete('/api/categories/:id', (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { operator } = req.body || {};
+
+  const result = updateDb(db => {
+    const hasProducts = (db.products || []).some(p => p.categoryId === id);
+    if (hasProducts) {
+      logServerAudit(db, 'Inventory', 'Category Delete Blocked', `Cannot delete category ${id} with existing products`, operator, 'Server Central', 'warning');
+      return { success: false, message: 'Cannot delete category that currently has active products assigned.' };
+    }
+    db.categories = (db.categories || []).filter(c => c.id !== id);
+    logServerAudit(db, 'Inventory', 'Category Deleted', `Deleted category ID: ${id}`, operator);
+    return { success: true, message: 'Category removed successfully.' };
+  });
+
+  if (!result.success) return res.status(400).json(result);
+  res.json(result);
 });
 
 app.post('/api/products/adjust-stock', (req: Request, res: Response) => {

@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { Product, CartItem, Customer, PaymentMethod, SalesInvoice } from '../types';
 import { ThermalReceipt } from '../components/print/ThermalReceipt';
 import { A4Invoice } from '../components/print/A4Invoice';
+import { getProductDisplayImage } from '../utils/imageUtils';
 
 export const PosPage: React.FC = () => {
   const { products, customers, completeSalesInvoice, invoices, voidSalesInvoice } = useApp();
@@ -405,16 +406,17 @@ export const PosPage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Product Image if available */}
-                  {product.imageUrl && (
-                    <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shrink-0">
-                      <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                    </div>
-                  )}
+                  {/* Guaranteed Product Visual */}
+                  <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shrink-0 relative">
+                    <img
+                      src={getProductDisplayImage(product.imageUrl, product.categoryId)}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = getProductDisplayImage('', product.categoryId);
+                      }}
+                    />
+                  </div>
 
                   {/* Product Name */}
                   <div className="flex-1">

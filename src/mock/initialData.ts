@@ -391,6 +391,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: { rack: 'A-03', shelf: 'Tier-1', bin: 'FLT-02' },
     isArchived: false,
     damagedStock: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=300&auto=format&fit=crop&q=60',
     createdAt: '2026-02-01',
   },
   {
@@ -412,6 +413,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: { rack: 'ACC-SHOW', shelf: 'Top', bin: 'HLM-01' },
     isArchived: false,
     damagedStock: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=300&auto=format&fit=crop&q=60',
     createdAt: '2026-02-05',
   },
   {
@@ -433,6 +435,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: { rack: 'E-02', shelf: 'Tier-3', bin: 'LGT-05' },
     isArchived: false,
     damagedStock: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1509744645300-a2098b11871a?w=300&auto=format&fit=crop&q=60',
     createdAt: '2026-02-08',
   },
   {
@@ -454,6 +457,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: { rack: 'A-02', shelf: 'Tier-2', bin: 'CHN-09' },
     isArchived: false,
     damagedStock: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=300&auto=format&fit=crop&q=60',
     createdAt: '2026-02-10',
   }
 ];

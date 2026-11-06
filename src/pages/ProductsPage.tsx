@@ -2,15 +2,21 @@ import React, { useState } from 'react';
 import { 
   Package, Search, Plus, Barcode, Edit3, Archive, 
   Trash2, Upload, Download, AlertTriangle, X, MapPin,
-  Image, Camera, PlusCircle, Boxes, CheckCircle2
+  Image, Camera, PlusCircle, Boxes, CheckCircle2,
+  FolderPlus, Eye, Loader2
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { Product } from '../types';
 import { BarcodeLabel } from '../components/common/BarcodeLabel';
+import { resizeImage, getProductDisplayImage } from '../utils/imageUtils';
 
 export const ProductsPage: React.FC = () => {
-  const { products, categories, brands, addProduct, updateProduct, archiveProduct, deleteProduct, recordDamagedStock, bulkImportProducts, suppliers, logAudit } = useApp();
+  const { 
+    products, categories, brands, addProduct, updateProduct, 
+    archiveProduct, deleteProduct, recordDamagedStock, bulkImportProducts, 
+    suppliers, logAudit, addCategory 
+  } = useApp();
   const { hasPermission } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,6 +32,16 @@ export const ProductsPage: React.FC = () => {
   const [damagedQty, setDamagedQty] = useState<number>(1);
   const [damagedReason, setDamagedReason] = useState<string>('Transit / Unpacking breakage');
   const [showImportModal, setShowImportModal] = useState(false);
+
+  // Category Creation State
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryUrdu, setNewCategoryUrdu] = useState('');
+  const [newCategoryDesc, setNewCategoryDesc] = useState('');
+
+  // Image Optimization & Lightbox Preview State
+  const [previewImage, setPreviewImage] = useState<{ url: string; title: string } | null>(null);
+  const [isResizingImage, setIsResizingImage] = useState(false);
 
   // Quick Restock / Stock Management State
   const [restockProduct, setRestockProduct] = useState<Product | null>(null);
@@ -63,21 +79,47 @@ export const ProductsPage: React.FC = () => {
     imageUrl: '',
   });
 
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 3 * 1024 * 1024) {
-      alert('Image file is too large! Please choose an image smaller than 3MB.');
+    try {
+      setIsResizingImage(true);
+      // Auto-resize and compress client-side using Canvas (max 480x480, JPEG 85% quality)
+      const optimizedDataUrl = await resizeImage(file, { maxWidth: 480, maxHeight: 480, quality: 0.85 });
+      setFormData(prev => ({ ...prev, imageUrl: optimizedDataUrl }));
+    } catch (err: any) {
+      console.warn('Canvas resize fallback to standard FileReader:', err);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        setFormData(prev => ({ ...prev, imageUrl: dataUrl }));
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setIsResizingImage(false);
+    }
+  };
+
+  const handleCreateCategory = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) {
+      alert('Please enter a category name / برائے مہربانی کیٹیگری کا نام درج کریں');
       return;
     }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target?.result as string;
-      setFormData(prev => ({ ...prev, imageUrl: dataUrl }));
-    };
-    reader.readAsDataURL(file);
+    const created = addCategory({
+      name: newCategoryName.trim(),
+      urduName: newCategoryUrdu.trim() || undefined,
+      description: newCategoryDesc.trim() || undefined
+    });
+    // Auto-select in form if product modal is open
+    setFormData(prev => ({ ...prev, categoryId: created.id }));
+    setSelectedCategory(created.id);
+    setNewCategoryName('');
+    setNewCategoryUrdu('');
+    setNewCategoryDesc('');
+    setShowAddCategoryModal(false);
+    alert(`✅ New Category "${created.name}" created successfully!`);
   };
 
   const openRestockModal = (p: Product) => {
@@ -350,6 +392,15 @@ export const ProductsPage: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setShowAddCategoryModal(true)}
+              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-rose-400 hover:text-rose-300 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition border border-slate-700"
+              title="Create a new motorcycle parts category"
+            >
+              <FolderPlus className="w-3.5 h-3.5 text-rose-500" />
+              <span>+ Add Category</span>
+            </button>
+
+            <button
               onClick={() => {
                 resetForm();
                 setShowAddModal(true);
@@ -451,17 +502,24 @@ export const ProductsPage: React.FC = () => {
                       {/* Name & SKU */}
                       <td className="p-3">
                         <div className="flex items-start gap-2.5">
-                          {p.imageUrl ? (
+                          <button
+                            type="button"
+                            onClick={() => setPreviewImage({ url: getProductDisplayImage(p.imageUrl, p.categoryId), title: p.name })}
+                            className="w-11 h-11 rounded-lg overflow-hidden border border-slate-700 bg-slate-800 shrink-0 shadow-xs hover:border-rose-500 hover:ring-2 hover:ring-rose-500/50 transition cursor-pointer group/thumb relative"
+                            title="Click to view full image / بڑی تصویر دیکھیں"
+                          >
                             <img
-                              src={p.imageUrl}
+                              src={getProductDisplayImage(p.imageUrl, p.categoryId)}
                               alt={p.name}
-                              className="w-11 h-11 rounded-lg object-cover border border-slate-700 bg-slate-800 shrink-0 shadow-xs"
+                              className="w-full h-full object-cover group-hover/thumb:scale-110 transition duration-200"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = getProductDisplayImage('', p.categoryId);
+                              }}
                             />
-                          ) : (
-                            <div className="w-11 h-11 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0 text-slate-500">
-                              <Package className="w-5 h-5 text-slate-500" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center transition">
+                              <Eye className="w-3.5 h-3.5 text-white" />
                             </div>
-                          )}
+                          </button>
                           <div>
                             <div className="font-bold text-white text-xs">{p.name}</div>
                             {p.urduName && (
@@ -611,27 +669,31 @@ export const ProductsPage: React.FC = () => {
               {/* Product Photo Upload & Preview Section */}
               <div className="p-3 bg-slate-800/40 rounded-xl border border-slate-700/80 flex flex-col sm:flex-row gap-4 items-center">
                 <div className="relative group shrink-0">
-                  {formData.imageUrl ? (
-                    <div className="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-brand-500/50 shadow-md">
-                      <img
-                        src={formData.imageUrl}
-                        alt="Product preview"
-                        className="w-full h-full object-cover"
-                      />
+                  <div className="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-brand-500/50 shadow-md bg-slate-900">
+                    <img
+                      src={formData.imageUrl ? formData.imageUrl : getProductDisplayImage('', formData.categoryId)}
+                      alt="Product preview"
+                      className="w-full h-full object-cover"
+                    />
+                    {formData.imageUrl && (
                       <button
                         type="button"
                         onClick={() => setFormData({ ...formData, imageUrl: '' })}
                         className="absolute top-1 right-1 bg-rose-600 hover:bg-rose-500 text-white p-1 rounded-full shadow-md transition"
-                        title="Remove image"
+                        title="Remove custom image"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
-                    </div>
-                  ) : (
-                    <div className="w-24 h-24 rounded-xl border-2 border-dashed border-slate-700 flex flex-col items-center justify-center text-slate-500 bg-slate-900/60">
-                      <Image className="w-8 h-8 stroke-[1.5]" />
-                      <span className="text-[10px] mt-1 font-medium text-slate-400">No Image</span>
-                    </div>
+                    )}
+                    {isResizingImage && (
+                      <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center text-white text-[10px]">
+                        <Loader2 className="w-5 h-5 animate-spin text-rose-500 mb-1" />
+                        <span>Resizing...</span>
+                      </div>
+                    )}
+                  </div>
+                  {!formData.imageUrl && (
+                    <span className="text-[9px] text-slate-400 block text-center mt-1 font-mono">Category Default</span>
                   )}
                 </div>
 
@@ -641,21 +703,26 @@ export const ProductsPage: React.FC = () => {
                       <Camera className="w-3.5 h-3.5 text-brand-400" />
                       Product Picture / تصویر اپلوڈ کریں
                     </label>
-                    {formData.imageUrl && (
+                    {formData.imageUrl ? (
                       <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Image Loaded
+                        <CheckCircle2 className="w-3 h-3" /> Resized & Optimized (480px)
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-slate-400">
+                        Camera photos auto-resized
                       </span>
                     )}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
                     <label className="cursor-pointer px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg font-bold text-xs transition flex items-center gap-1.5 shadow-xs">
-                      <Camera className="w-3.5 h-3.5" />
+                      {isResizingImage ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
                       <span>Choose File / Camera</span>
                       <input
                         type="file"
                         accept="image/*"
                         capture="environment"
+                        disabled={isResizingImage}
                         onChange={handleImageFileChange}
                         className="hidden"
                       />
@@ -671,7 +738,7 @@ export const ProductsPage: React.FC = () => {
                     className={inputCls}
                   />
                   <p className="text-[10px] text-slate-400">
-                    Supports JPG, PNG, WebP up to 3MB. Images are saved directly into the database.
+                    High-res photos from camera or storage are automatically compressed to 480x480 max for instant rendering.
                   </p>
                 </div>
               </div>
@@ -723,7 +790,17 @@ export const ProductsPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="font-semibold block mb-1 text-slate-300">Category:</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-semibold text-slate-300">Category:</label>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddCategoryModal(true)}
+                      className="text-[11px] text-rose-400 hover:text-rose-300 font-bold flex items-center gap-0.5 hover:underline cursor-pointer"
+                      title="Add a new category on the fly"
+                    >
+                      <PlusCircle className="w-3 h-3" /> + New
+                    </button>
+                  </div>
                   <select
                     value={formData.categoryId}
                     onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
@@ -933,17 +1010,14 @@ export const ProductsPage: React.FC = () => {
 
             {/* Product Summary Header */}
             <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/80 flex items-center gap-3">
-              {restockProduct.imageUrl ? (
-                <img
-                  src={restockProduct.imageUrl}
-                  alt={restockProduct.name}
-                  className="w-14 h-14 rounded-lg object-cover border border-slate-700 bg-slate-900"
-                />
-              ) : (
-                <div className="w-14 h-14 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-500">
-                  <Package className="w-6 h-6" />
-                </div>
-              )}
+              <img
+                src={getProductDisplayImage(restockProduct.imageUrl, restockProduct.categoryId)}
+                alt={restockProduct.name}
+                className="w-14 h-14 rounded-lg object-cover border border-slate-700 bg-slate-900 shrink-0"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = getProductDisplayImage('', restockProduct.categoryId);
+                }}
+              />
               <div className="flex-1">
                 <h4 className="font-bold text-white text-sm leading-tight">{restockProduct.name}</h4>
                 {restockProduct.urduName && (
@@ -1163,6 +1237,126 @@ export const ProductsPage: React.FC = () => {
                 className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-100 font-semibold rounded-lg text-[11px] transition"
               >
                 Import 4 Pre-built Motorcycle Parts
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ADD NEW CATEGORY MODAL */}
+      {showAddCategoryModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4" style={{ colorScheme: 'dark' }}>
+          <div className="bg-slate-900 text-slate-100 rounded-2xl shadow-2xl max-w-md w-full border border-slate-800 overflow-hidden">
+            <div className="p-4 bg-slate-800/60 border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FolderPlus className="w-5 h-5 text-rose-500" />
+                <h3 className="font-bold text-white text-sm">Add New Category / نئی کیٹیگری</h3>
+              </div>
+              <button 
+                onClick={() => setShowAddCategoryModal(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCategory} className="p-5 space-y-4 text-xs">
+              <div>
+                <label className="font-semibold block mb-1 text-slate-300">
+                  Category Name (English) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Suspension & Shock Absorbers, Transmission Gear"
+                  value={newCategoryName}
+                  onChange={e => setNewCategoryName(e.target.value)}
+                  className={inputCls}
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label className="font-semibold block mb-1 text-slate-300">
+                  اردو نام / Urdu Category Name
+                </label>
+                <input
+                  type="text"
+                  dir="rtl"
+                  placeholder="مثلاً: جمپ اور سسپنشن، گیئر اور کلچ"
+                  value={newCategoryUrdu}
+                  onChange={e => setNewCategoryUrdu(e.target.value)}
+                  className={`${inputCls} urdu-font text-sm text-right`}
+                />
+              </div>
+
+              <div>
+                <label className="font-semibold block mb-1 text-slate-300">
+                  Description / تفصیل (Optional)
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Front fork pipes, rear shock assemblies, bush kits..."
+                  value={newCategoryDesc}
+                  onChange={e => setNewCategoryDesc(e.target.value)}
+                  className={inputCls}
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowAddCategoryModal(false)}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition shadow-md shadow-rose-600/30 flex items-center gap-1.5"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>Save Category</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* FULL-SIZE IMAGE PREVIEW LIGHTBOX */}
+      {previewImage && (
+        <div 
+          className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setPreviewImage(null)}
+          style={{ colorScheme: 'dark' }}
+        >
+          <div 
+            className="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-3.5 border-b border-slate-800 bg-slate-950">
+              <h3 className="font-bold text-white text-sm truncate">{previewImage.title}</h3>
+              <button
+                onClick={() => setPreviewImage(null)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 flex items-center justify-center bg-slate-950/70 min-h-[240px] max-h-[70vh]">
+              <img
+                src={previewImage.url}
+                alt={previewImage.title}
+                className="max-h-[60vh] max-w-full rounded-xl object-contain border border-slate-800 shadow-lg"
+              />
+            </div>
+            <div className="p-3 border-t border-slate-800 flex justify-end bg-slate-900">
+              <button
+                onClick={() => setPreviewImage(null)}
+                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold"
+              >
+                Close Preview
               </button>
             </div>
           </div>
