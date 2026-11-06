@@ -409,11 +409,13 @@ export const PosPage: React.FC = () => {
                   {/* Guaranteed Product Visual */}
                   <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shrink-0 relative">
                     <img
-                      src={getProductDisplayImage(product.imageUrl, product.categoryId)}
+                      src={getProductDisplayImage(product.imageUrl, product.categoryId, product.name)}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = getProductDisplayImage('', product.categoryId);
+                        const el = e.currentTarget;
+                        el.onerror = null;
+                        el.src = getProductDisplayImage('', product.categoryId, product.name);
                       }}
                     />
                   </div>

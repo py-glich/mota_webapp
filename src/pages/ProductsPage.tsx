@@ -504,16 +504,18 @@ export const ProductsPage: React.FC = () => {
                         <div className="flex items-start gap-2.5">
                           <button
                             type="button"
-                            onClick={() => setPreviewImage({ url: getProductDisplayImage(p.imageUrl, p.categoryId), title: p.name })}
+                            onClick={() => setPreviewImage({ url: getProductDisplayImage(p.imageUrl, p.categoryId, p.name), title: p.name })}
                             className="w-11 h-11 rounded-lg overflow-hidden border border-slate-700 bg-slate-800 shrink-0 shadow-xs hover:border-rose-500 hover:ring-2 hover:ring-rose-500/50 transition cursor-pointer group/thumb relative"
                             title="Click to view full image / بڑی تصویر دیکھیں"
                           >
                             <img
-                              src={getProductDisplayImage(p.imageUrl, p.categoryId)}
+                              src={getProductDisplayImage(p.imageUrl, p.categoryId, p.name)}
                               alt={p.name}
                               className="w-full h-full object-cover group-hover/thumb:scale-110 transition duration-200"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = getProductDisplayImage('', p.categoryId);
+                                const el = e.currentTarget;
+                                el.onerror = null;
+                                el.src = getProductDisplayImage('', p.categoryId, p.name);
                               }}
                             />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center transition">
@@ -671,7 +673,7 @@ export const ProductsPage: React.FC = () => {
                 <div className="relative group shrink-0">
                   <div className="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-brand-500/50 shadow-md bg-slate-900">
                     <img
-                      src={formData.imageUrl ? formData.imageUrl : getProductDisplayImage('', formData.categoryId)}
+                      src={getProductDisplayImage(formData.imageUrl, formData.categoryId, formData.name)}
                       alt="Product preview"
                       className="w-full h-full object-cover"
                     />
