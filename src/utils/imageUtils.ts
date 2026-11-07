@@ -101,17 +101,33 @@ export const USER_AVATARS = {
 };
 
 export function getUserAvatar(avatarUrl?: string, role?: string, username?: string): string {
-  if (avatarUrl && avatarUrl.startsWith('data:image/')) {
+  // User-uploaded real photo
+  if (avatarUrl && (
+    avatarUrl.startsWith('data:image/jpeg') || 
+    avatarUrl.startsWith('data:image/png') || 
+    avatarUrl.startsWith('data:image/webp')
+  )) {
     return avatarUrl;
   }
-  if (!avatarUrl || avatarUrl.includes('unsplash.com') || avatarUrl.includes('placeholder')) {
-    if (role === 'owner' || username === 'owner') return USER_AVATARS.OWNER;
-    if (role === 'manager' || username === 'manager') return USER_AVATARS.MANAGER;
-    if (username === 'cashier2') return USER_AVATARS.CASHIER_2;
-    if (role === 'cashier' || username === 'cashier1') return USER_AVATARS.CASHIER_1;
-    return USER_AVATARS.DEFAULT;
+
+  // Valid external avatar URL
+  if (
+    avatarUrl && 
+    (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) && 
+    !avatarUrl.includes('unsplash.com') && 
+    !avatarUrl.includes('placeholder')
+  ) {
+    return avatarUrl;
   }
-  return avatarUrl;
+
+  // System role-based vector avatars
+  const u = (username || '').toLowerCase();
+  const r = (role || '').toLowerCase();
+  if (r === 'owner' || u === 'owner') return USER_AVATARS.OWNER;
+  if (r === 'manager' || u === 'manager') return USER_AVATARS.MANAGER;
+  if (u.includes('cashier2') || u.includes('bilal')) return USER_AVATARS.CASHIER_2;
+  if (r === 'cashier' || u.includes('cashier') || u.includes('hamza')) return USER_AVATARS.CASHIER_1;
+  return USER_AVATARS.DEFAULT;
 }
 
 export const CATEGORY_FALLBACK_IMAGES: Record<string, string> = {
@@ -175,21 +191,31 @@ export function matchPartGraphic(productName?: string, categoryId?: string): str
 
 /**
  * Returns a guaranteed valid image URL for any product:
- * 1. If product has ANY local base64 image (JPEG, PNG, WebP, SVG, GIF), return it immediately.
- * 2. If product has an external URL that might be blocked or fail (like Unsplash), returns the 100% offline crisp part graphic.
- * 3. Never returns empty or broken links.
+ * 1. If user uploaded a real image (JPEG, PNG, WebP from camera/file/clipboard), return it directly.
+ * 2. If user provided an external http(s) URL (not Unsplash/placeholder), return it.
+ * 3. Otherwise (or for default SVGs), ALWAYS return the fresh, verified offline vector graphic from memory.
  */
 export function getProductDisplayImage(imageUrl?: string, categoryId?: string, productName?: string): string {
-  // If user uploaded/assigned a real base64 image, use it directly
-  if (imageUrl && imageUrl.startsWith('data:image/')) {
+  // User-uploaded real photo (from camera, file picker, or clipboard paste)
+  if (imageUrl && (
+    imageUrl.startsWith('data:image/jpeg') || 
+    imageUrl.startsWith('data:image/png') || 
+    imageUrl.startsWith('data:image/webp') || 
+    imageUrl.startsWith('data:image/gif')
+  )) {
     return imageUrl;
   }
 
-  // If imageUrl is an external URL (Unsplash, CDN, etc.) or missing — replace with local offline graphic
-  if (!imageUrl || imageUrl.includes('unsplash.com') || imageUrl.includes('placeholder') || imageUrl.trim().length === 0) {
-    return matchPartGraphic(productName, categoryId);
+  // External image URL (provided it's not a broken Unsplash or placeholder link)
+  if (
+    imageUrl && 
+    (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) && 
+    !imageUrl.includes('unsplash.com') && 
+    !imageUrl.includes('placeholder')
+  ) {
+    return imageUrl;
   }
 
-  // For any http/https URL that isn't explicitly blocked, return as-is
-  return imageUrl;
+  // For all system default parts, return the verified clean offline graphic from memory
+  return matchPartGraphic(productName, categoryId);
 }

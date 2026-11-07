@@ -114,26 +114,24 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser, currentCounter, updateCounterCash } = useAuth();
 
-  // ─── Auto-clear stale localStorage if it has external/unsplash image URLs ───
-  // This runs once at mount to ensure we never serve broken Unsplash URLs.
+  // ─── Automated Cache Buster: Discards stale cached records from earlier versions ───
+  const MOTOPRO_CACHE_VERSION = 'v4_bulletproof_images_20261107';
+  try {
+    if (typeof window !== 'undefined' && localStorage.getItem('motopro_cache_ver') !== MOTOPRO_CACHE_VERSION) {
+      localStorage.removeItem('cyberorion_products');
+      localStorage.removeItem('cyberorion_auth_user');
+      localStorage.removeItem('cyberorion_users');
+      localStorage.setItem('motopro_cache_ver', MOTOPRO_CACHE_VERSION);
+    }
+  } catch {
+    // Ignore in SSR
+  }
+
   const [products, setProducts] = useState<Product[]>(() => {
     const s = localStorage.getItem('cyberorion_products');
     if (s) {
       try {
         const parsed: Product[] = JSON.parse(s);
-        // Check if ANY product has an unsplash/external URL — if so, clear and use initial
-        const hasStaleUrls = parsed.some(p => 
-          p.imageUrl && (
-            p.imageUrl.includes('unsplash.com') || 
-            p.imageUrl.includes('placeholder') ||
-            (p.imageUrl.startsWith('http') && !p.imageUrl.startsWith('http://localhost'))
-          )
-        );
-        if (hasStaleUrls) {
-          // Clear stale localStorage — will be repopulated from API on first sync
-          localStorage.removeItem('cyberorion_products');
-          return INITIAL_PRODUCTS;
-        }
         return parsed;
       } catch {
         return INITIAL_PRODUCTS;
