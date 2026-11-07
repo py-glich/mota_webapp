@@ -7,14 +7,15 @@ export interface ResizeOptions {
   maxWidth?: number;
   maxHeight?: number;
   quality?: number;
+  square?: boolean;
 }
 
 /**
  * Resizes any image file (from camera, file picker, or clipboard) client-side using an offscreen HTML5 canvas.
- * Produces a lightweight, highly-compressed Base64 JPEG (typically 20KB - 50KB instead of 3MB+).
+ * Produces a lightweight, crisp 500x500 square Base64 JPEG (typically 25KB - 55KB instead of 3MB+).
  */
 export async function resizeImage(file: File | Blob, options: ResizeOptions = {}): Promise<string> {
-  const { maxWidth = 480, maxHeight = 480, quality = 0.85 } = options;
+  const { maxWidth = 500, maxHeight = 500, quality = 0.85, square = true } = options;
 
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -30,33 +31,52 @@ export async function resizeImage(file: File | Blob, options: ResizeOptions = {}
       img.onload = () => {
         let { width, height } = img;
 
-        // Calculate proportional dimensions
-        if (width > height) {
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-        } else {
-          if (height > maxHeight) {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
-          }
-        }
-
         const canvas = document.createElement('canvas');
-        canvas.width = Math.max(1, width);
-        canvas.height = Math.max(1, height);
-
         const ctx = canvas.getContext('2d');
         if (!ctx) {
           return resolve(dataUrl);
         }
 
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, width, height);
+        if (square) {
+          // Exact 500x500 square canvas with proportional center-cover
+          canvas.width = maxWidth;
+          canvas.height = maxHeight;
+
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+
+          const ratio = Math.max(maxWidth / width, maxHeight / height);
+          const drawW = width * ratio;
+          const drawH = height * ratio;
+          const offsetX = (maxWidth - drawW) / 2;
+          const offsetY = (maxHeight - drawH) / 2;
+
+          ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+        } else {
+          // Proportional dimensions within bounds
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = Math.max(1, width);
+          canvas.height = Math.max(1, height);
+
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, width, height);
+        }
 
         try {
           const resizedDataUrl = canvas.toDataURL('image/jpeg', quality);

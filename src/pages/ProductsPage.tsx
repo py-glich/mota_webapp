@@ -85,8 +85,8 @@ export const ProductsPage: React.FC = () => {
 
     try {
       setIsResizingImage(true);
-      // Auto-resize and compress client-side using Canvas (max 480x480, JPEG 85% quality)
-      const optimizedDataUrl = await resizeImage(file, { maxWidth: 480, maxHeight: 480, quality: 0.85 });
+      // Auto-resize and compress client-side using Canvas to exact 500x500 square JPEG
+      const optimizedDataUrl = await resizeImage(file, { maxWidth: 500, maxHeight: 500, quality: 0.85, square: true });
       setFormData(prev => ({ ...prev, imageUrl: optimizedDataUrl }));
     } catch (err: any) {
       console.warn('Canvas resize fallback to standard FileReader:', err);
@@ -111,7 +111,7 @@ export const ProductsPage: React.FC = () => {
           e.preventDefault();
           try {
             setIsResizingImage(true);
-            const optimizedDataUrl = await resizeImage(file, { maxWidth: 480, maxHeight: 480, quality: 0.85 });
+            const optimizedDataUrl = await resizeImage(file, { maxWidth: 500, maxHeight: 500, quality: 0.85, square: true });
             setFormData(prev => ({ ...prev, imageUrl: optimizedDataUrl }));
           } catch (err) {
             console.warn('Resize fallback on clipboard paste:', err);
@@ -735,11 +735,11 @@ export const ProductsPage: React.FC = () => {
                     </label>
                     {formData.imageUrl ? (
                       <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Resized & Optimized (480px)
+                        <CheckCircle2 className="w-3 h-3" /> Resized & Optimized (500x500 Square)
                       </span>
                     ) : (
                       <span className="text-[10px] text-slate-400">
-                        Camera photos auto-resized
+                        Camera photos auto-resized (500x500)
                       </span>
                     )}
                   </div>
@@ -1374,11 +1374,11 @@ export const ProductsPage: React.FC = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-4 flex items-center justify-center bg-slate-950/70 min-h-[240px] max-h-[70vh]">
+            <div className="p-4 flex items-center justify-center bg-slate-950/70 min-h-[280px]">
               <img
                 src={previewImage.url}
                 alt={previewImage.title}
-                className="max-h-[60vh] max-w-full rounded-xl object-contain border border-slate-800 shadow-lg"
+                className="w-72 h-72 sm:w-96 sm:h-96 rounded-2xl object-cover border border-slate-800 shadow-2xl bg-slate-900"
               />
             </div>
             <div className="p-3 border-t border-slate-800 flex justify-end bg-slate-900">

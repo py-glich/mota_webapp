@@ -406,8 +406,8 @@ export const PosPage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Guaranteed Product Visual */}
-                  <div className="w-full h-24 mb-2 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shrink-0 relative">
+                  {/* Guaranteed 1:1 Square Product Visual */}
+                  <div className="w-full aspect-square mb-2 rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shrink-0 relative flex items-center justify-center">
                     <img
                       src={getProductDisplayImage(product.imageUrl, product.categoryId, product.name)}
                       alt={product.name}
