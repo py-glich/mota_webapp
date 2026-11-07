@@ -420,17 +420,17 @@ export const PosPage: React.FC = () => {
                     />
                   </div>
 
-                  {/* Product Name */}
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-xs text-white line-clamp-2 group-hover:text-rose-400 transition">
+                  {/* Product Details with Clean Spacing */}
+                  <div className="flex-1 flex flex-col justify-start">
+                    <h4 className="font-semibold text-xs leading-snug text-white line-clamp-2 group-hover:text-rose-400 transition min-h-[2rem]">
                       {product.name}
                     </h4>
                     {product.urduName && (
-                      <p className="urdu-font text-[11px] text-slate-400 mt-0.5 truncate">
+                      <p className="urdu-font text-[11px] text-slate-400 mt-1.5 mb-1 truncate leading-relaxed">
                         {product.urduName}
                       </p>
                     )}
-                    <p className="text-[10px] text-slate-500 font-mono mt-0.5">SKU: {product.sku}</p>
+                    <p className="text-[10px] text-slate-500 font-mono mt-auto pt-1">SKU: {product.sku}</p>
                   </div>
 
                   {/* Price and Cart indicator */}
