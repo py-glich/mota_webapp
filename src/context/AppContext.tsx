@@ -113,9 +113,32 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser, currentCounter, updateCounterCash } = useAuth();
 
+  // ─── Auto-clear stale localStorage if it has external/unsplash image URLs ───
+  // This runs once at mount to ensure we never serve broken Unsplash URLs.
   const [products, setProducts] = useState<Product[]>(() => {
     const s = localStorage.getItem('cyberorion_products');
-    return s ? JSON.parse(s) : INITIAL_PRODUCTS;
+    if (s) {
+      try {
+        const parsed: Product[] = JSON.parse(s);
+        // Check if ANY product has an unsplash/external URL — if so, clear and use initial
+        const hasStaleUrls = parsed.some(p => 
+          p.imageUrl && (
+            p.imageUrl.includes('unsplash.com') || 
+            p.imageUrl.includes('placeholder') ||
+            (p.imageUrl.startsWith('http') && !p.imageUrl.startsWith('http://localhost'))
+          )
+        );
+        if (hasStaleUrls) {
+          // Clear stale localStorage — will be repopulated from API on first sync
+          localStorage.removeItem('cyberorion_products');
+          return INITIAL_PRODUCTS;
+        }
+        return parsed;
+      } catch {
+        return INITIAL_PRODUCTS;
+      }
+    }
+    return INITIAL_PRODUCTS;
   });
 
   const [categories, setCategories] = useState<Category[]>(() => {

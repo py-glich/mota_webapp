@@ -151,20 +151,21 @@ export function matchPartGraphic(productName?: string, categoryId?: string): str
 
 /**
  * Returns a guaranteed valid image URL for any product:
- * 1. If product has a local or user-uploaded base64 image (`data:image/`), return it immediately.
+ * 1. If product has ANY local base64 image (JPEG, PNG, WebP, SVG, GIF), return it immediately.
  * 2. If product has an external URL that might be blocked or fail (like Unsplash), returns the 100% offline crisp part graphic.
  * 3. Never returns empty or broken links.
  */
 export function getProductDisplayImage(imageUrl?: string, categoryId?: string, productName?: string): string {
-  // If user uploaded a real image (Base64 JPEG/PNG), use it!
-  if (imageUrl && imageUrl.startsWith('data:image/jpeg') || (imageUrl && imageUrl.startsWith('data:image/png')) || (imageUrl && imageUrl.startsWith('data:image/webp'))) {
+  // If user uploaded/assigned a real base64 image, use it directly — covers JPEG, PNG, WebP, SVG, GIF
+  if (imageUrl && imageUrl.startsWith('data:image/')) {
     return imageUrl;
   }
 
-  // If imageUrl is an external Unsplash link, replace with local guaranteed part graphic so it never breaks
-  if (!imageUrl || imageUrl.includes('unsplash.com') || imageUrl.trim().length === 0) {
+  // If imageUrl is an external URL (Unsplash, CDN, etc.) or missing — replace with local offline graphic
+  if (!imageUrl || imageUrl.includes('unsplash.com') || imageUrl.includes('placeholder') || imageUrl.trim().length === 0) {
     return matchPartGraphic(productName, categoryId);
   }
 
+  // For any http/https URL that isn't explicitly blocked, return as-is
   return imageUrl;
 }
