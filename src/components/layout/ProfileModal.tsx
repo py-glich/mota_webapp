@@ -4,6 +4,7 @@ import {
   ShieldCheck, Check, AlertCircle, LogOut, KeyRound, Image 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { USER_AVATARS, getUserAvatar } from '../../utils/imageUtils';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -11,12 +12,11 @@ interface ProfileModalProps {
 }
 
 const PRESET_AVATARS = [
-  { label: 'Superbike Helmet', url: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=150&auto=format&fit=crop&q=80' },
-  { label: 'Faizan (Owner)', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' },
-  { label: 'Hamza (Manager)', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80' },
-  { label: 'Bilal (Cashier 1)', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80' },
-  { label: 'Usman (Cashier 2)', url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80' },
-  { label: 'Ustad Mechanic', url: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80' },
+  { label: 'Faizan (Owner)', url: USER_AVATARS.OWNER },
+  { label: 'Manager Badge', url: USER_AVATARS.MANAGER },
+  { label: 'Cashier 1', url: USER_AVATARS.CASHIER_1 },
+  { label: 'Cashier 2', url: USER_AVATARS.CASHIER_2 },
+  { label: 'Default Rider', url: USER_AVATARS.DEFAULT },
 ];
 
 export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
@@ -102,7 +102,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
           <div className="flex items-center gap-3">
             <div className="relative">
               <img
-                src={avatarUrl || currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
+                src={getUserAvatar(avatarUrl || currentUser.avatar, currentUser.role, currentUser.username)}
                 alt={currentUser.name}
                 className="w-11 h-11 rounded-full object-cover border-2 border-rose-600 shadow-md"
               />
@@ -248,7 +248,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
             <div className="space-y-4">
               <div className="flex items-center gap-4 p-3 bg-[#0B0E14] border border-[#1E2638] rounded-xl">
                 <img
-                  src={avatarUrl || currentUser.avatar}
+                  src={getUserAvatar(avatarUrl || currentUser.avatar, currentUser.role, currentUser.username)}
                   alt="Preview"
                   className="w-16 h-16 rounded-full object-cover border-2 border-rose-500 shrink-0"
                 />

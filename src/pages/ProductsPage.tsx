@@ -101,6 +101,34 @@ export const ProductsPage: React.FC = () => {
     }
   };
 
+  const handlePasteImage = async (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          e.preventDefault();
+          try {
+            setIsResizingImage(true);
+            const optimizedDataUrl = await resizeImage(file, { maxWidth: 480, maxHeight: 480, quality: 0.85 });
+            setFormData(prev => ({ ...prev, imageUrl: optimizedDataUrl }));
+          } catch (err) {
+            console.warn('Resize fallback on clipboard paste:', err);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              setFormData(prev => ({ ...prev, imageUrl: event.target?.result as string }));
+            };
+            reader.readAsDataURL(file);
+          } finally {
+            setIsResizingImage(false);
+          }
+          return;
+        }
+      }
+    }
+  };
+
   const handleCreateCategory = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategoryName.trim()) {
@@ -667,7 +695,7 @@ export const ProductsPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSaveProduct} className="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+            <form onSubmit={handleSaveProduct} onPaste={handlePasteImage} className="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
               {/* Product Photo Upload & Preview Section */}
               <div className="p-3 bg-slate-800/40 rounded-xl border border-slate-700/80 flex flex-col sm:flex-row gap-4 items-center">
                 <div className="relative group shrink-0">
@@ -733,14 +761,14 @@ export const ProductsPage: React.FC = () => {
                   </div>
 
                   <input
-                    type="url"
-                    placeholder="https://example.com/part-photo.jpg"
+                    type="text"
+                    placeholder="Paste image URL (https://...) or data:image/... or press Ctrl+V"
                     value={formData.imageUrl}
-                    onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
+                    onChange={e => setFormData({ ...formData, imageUrl: e.target.value.trim() })}
                     className={inputCls}
                   />
                   <p className="text-[10px] text-slate-400">
-                    High-res photos from camera or storage are automatically compressed to 480x480 max for instant rendering.
+                    High-res photos from camera, storage, URL, or clipboard (Ctrl+V) are automatically optimized for instant display.
                   </p>
                 </div>
               </div>

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { getUserAvatar } from '../../utils/imageUtils';
 
 export type ActiveTab = 
   | 'dashboard' | 'pos' | 'products' | 'inventory' | 'purchases' 
@@ -167,9 +168,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="relative shrink-0">
               <img
-                src={currentUser?.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"}
+                src={getUserAvatar(currentUser?.avatar, currentUser?.role, currentUser?.username)}
                 alt={currentUser?.name}
                 className="w-8 h-8 rounded-full object-cover border border-rose-600"
+                onError={(e) => {
+                  const el = e.currentTarget;
+                  el.onerror = null;
+                  el.src = getUserAvatar('', currentUser?.role, currentUser?.username);
+                }}
               />
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border border-[#111622] rounded-full"></span>
             </div>

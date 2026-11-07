@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { getUserAvatar } from '../../utils/imageUtils';
 
 interface HeaderProps {
   onOpenMobileMenu?: () => void;
@@ -155,9 +156,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenProfileM
           >
             <div className="relative">
               <img
-                src={currentUser?.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"}
+                src={getUserAvatar(currentUser?.avatar, currentUser?.role, currentUser?.username)}
                 alt={currentUser?.name}
                 className="w-8 h-8 rounded-full object-cover border border-rose-600"
+                onError={(e) => {
+                  const el = e.currentTarget;
+                  el.onerror = null;
+                  el.src = getUserAvatar('', currentUser?.role, currentUser?.username);
+                }}
               />
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border border-[#0B0E14] rounded-full"></span>
             </div>
@@ -173,9 +179,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenProfileM
               {/* Active Profile Info Header */}
               <div className="px-4 py-2.5 border-b border-[#1B2232] flex items-center gap-3">
                 <img
-                  src={currentUser?.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"}
+                  src={getUserAvatar(currentUser?.avatar, currentUser?.role, currentUser?.username)}
                   alt={currentUser?.name}
                   className="w-10 h-10 rounded-full object-cover border border-rose-500"
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    el.onerror = null;
+                    el.src = getUserAvatar('', currentUser?.role, currentUser?.username);
+                  }}
                 />
                 <div className="min-w-0 flex-1">
                   <h4 className="font-bold text-white text-xs truncate leading-tight">{currentUser?.name}</h4>
