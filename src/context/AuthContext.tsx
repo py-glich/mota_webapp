@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Counter, UserPermissions, Role } from '../types';
 import { INITIAL_USERS, INITIAL_COUNTERS } from '../mock/initialData';
+import { USER_AVATARS } from '../utils/imageUtils';
 
 export interface RegisterData {
   name: string;
@@ -212,7 +213,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         counterId: regData.counterId || (defaultRole === 'cashier' ? 'CTR-1' : undefined),
         active: true,
         phone: regData.phone || '+92 300 0000000',
-        avatar: regData.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+        avatar: regData.avatar || USER_AVATARS.DEFAULT,
         lastLogin: new Date().toISOString().replace('T', ' ').substring(0, 19),
         permissions: {
           canViewPurchasePrice: true,

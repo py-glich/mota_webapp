@@ -4,6 +4,7 @@ import {
   ArrowRight, ShieldCheck, AlertCircle, Database
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { PART_IMAGES } from '../utils/imageUtils';
 
 export const AuthPage: React.FC = () => {
   const { login } = useAuth();
@@ -52,7 +53,7 @@ export const AuthPage: React.FC = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen pointer-events-none"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&auto=format&fit=crop&q=80')`,
+              backgroundImage: `url('${PART_IMAGES.CHAIN_SPROCKET}')`,
               maskImage: 'linear-gradient(to top, transparent 0%, black 50%, black 90%)',
               WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 50%, black 90%)'
             }}

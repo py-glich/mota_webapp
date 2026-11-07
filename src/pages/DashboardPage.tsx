@@ -9,6 +9,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianG
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { ActiveTab } from '../components/layout/Sidebar';
+import { PART_IMAGES } from '../utils/imageUtils';
 
 interface DashboardPageProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -61,7 +62,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
           <div 
             className="absolute right-0 top-0 bottom-0 w-2/3 md:w-1/2 bg-cover bg-center opacity-45 mix-blend-screen pointer-events-none"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&auto=format&fit=crop&q=80')`,
+              backgroundImage: `url('${PART_IMAGES.CHAIN_SPROCKET}')`,
               maskImage: 'linear-gradient(to right, transparent 0%, black 50%)',
               WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 50%)'
             }}
@@ -250,7 +251,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-slate-400 w-3 text-center">1</span>
               <img 
-                src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=100&auto=format&fit=crop&q=80" 
+                src={PART_IMAGES.HELMET_ACCESSORIES} 
                 alt="Premium Helmet" 
                 className="w-10 h-10 rounded-xl object-cover bg-slate-900 border border-[#1E2638] shrink-0"
               />
@@ -271,7 +272,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-slate-400 w-3 text-center">2</span>
               <img 
-                src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=100&auto=format&fit=crop&q=80" 
+                src={PART_IMAGES.ENGINE_OIL} 
                 alt="Engine Oil 1L" 
                 className="w-10 h-10 rounded-xl object-cover bg-slate-900 border border-[#1E2638] shrink-0"
               />
@@ -291,7 +292,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-slate-400 w-3 text-center">3</span>
               <img 
-                src="https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=100&auto=format&fit=crop&q=80" 
+                src={PART_IMAGES.ELECTRICAL_PARTS} 
                 alt="Spark Plug" 
                 className="w-10 h-10 rounded-xl object-cover bg-slate-900 border border-[#1E2638] shrink-0"
               />
@@ -422,7 +423,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
             {/* Warehouse mini thumbnail image */}
             <div 
               className="w-16 h-20 rounded-xl bg-cover bg-center border border-[#1E2638] shrink-0 hidden sm:block opacity-75"
-              style={{ backgroundImage: `url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=150&auto=format&fit=crop&q=80')` }}
+              style={{ backgroundImage: `url('${PART_IMAGES.SUSPENSION_SHOCK}')` }}
             />
           </div>
         </div>
@@ -512,7 +513,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
           {/* Motorcycle Wheel Inset */}
           <div 
             className="absolute right-0 bottom-0 w-36 h-36 bg-cover bg-center opacity-40 pointer-events-none rounded-br-2xl"
-            style={{ backgroundImage: `url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=300&auto=format&fit=crop&q=80')` }}
+            style={{ backgroundImage: `url('${PART_IMAGES.MOTORCYCLE_TYRE}')` }}
           />
 
           <div className="relative z-10 space-y-1">

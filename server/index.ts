@@ -258,7 +258,7 @@ app.post('/api/products/import', (req: Request, res: Response) => {
         minStockAlert: Number(item.minStockAlert) || 5,
         location: item.location || { rack: 'A-01', shelf: '1', bin: 'BIN-01' },
         description: item.description || '',
-        imageUrl: item.imageUrl || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=300&auto=format&fit=crop&q=60',
+        imageUrl: item.imageUrl || getServerPartImage(item.name, item.categoryId),
         isArchived: false,
         damagedStock: 0,
         createdAt: new Date().toISOString().split('T')[0]
@@ -1081,7 +1081,7 @@ app.post('/api/auth/register', (req: Request, res: Response) => {
     counterId: counterId || (defaultRole === 'cashier' ? 'CTR-1' : undefined),
     active: true,
     phone: phone || '+92 300 0000000',
-    avatar: avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+    avatar: avatar || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+PGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNTgiIGZpbGw9IiMxZTI5M2IiIHN0cm9rZT0iI2UxMWQ0OCIgc3Ryb2tlLXdpZHRoPSIzIi8+PGNpcmNsZSBjeD0iNjAiIGN5PSI0NiIgcj0iMjAiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMjYgMTAyIEMyNiA3OCwgNDIgNzIsIDYwIDcyIEM3OCA3MiwgOTQgNzgsIDk0IDEwMiBaIiBmaWxsPSIjZmZmIi8+PC9zdmc+',
     lastLogin: new Date().toISOString().replace('T', ' ').substring(0, 19),
     permissions: {
       canViewPurchasePrice: true,

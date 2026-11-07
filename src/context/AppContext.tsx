@@ -13,6 +13,7 @@ import {
   INITIAL_AUDIT_LOGS, INITIAL_QUOTATIONS, INITIAL_CAMPAIGNS 
 } from '../mock/initialData';
 import { useAuth } from './AuthContext';
+import { matchPartGraphic } from '../utils/imageUtils';
 
 export interface DatabaseStatus {
   connected: boolean;
@@ -516,7 +517,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         minStockAlert: Number(item.minStockAlert) || 5,
         location: item.location || { rack: 'A-01', shelf: '1', bin: 'BIN-01' },
         description: item.description || '',
-        imageUrl: item.imageUrl || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=300&auto=format&fit=crop&q=60',
+        imageUrl: item.imageUrl || matchPartGraphic(item.name, item.categoryId),
         isArchived: false,
         damagedStock: 0,
         createdAt: new Date().toISOString().split('T')[0]
