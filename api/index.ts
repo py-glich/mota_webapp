@@ -11,6 +11,9 @@ export async function getMongoClient(): Promise<MongoClient> {
       maxPoolSize: 5,
       serverSelectionTimeoutMS: 8000,
       connectTimeoutMS: 10000,
+      tls: true,
+      tlsAllowInvalidCertificates: true,
+      tlsInsecure: true,
     });
     cachedPromise = client.connect();
     (global as any)._mongoClientPromise = cachedPromise;
