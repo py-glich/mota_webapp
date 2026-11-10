@@ -9,9 +9,11 @@ export async function getMongoClient(): Promise<MongoClient> {
     return cachedClient;
   }
   const client = new MongoClient(MONGODB_URI, {
-    maxPoolSize: 10,
+    maxPoolSize: 5,
     serverSelectionTimeoutMS: 5000,
     connectTimeoutMS: 10000,
+    tls: true,
+    tlsAllowInvalidCertificates: false,
   });
   await client.connect();
   cachedClient = client;
