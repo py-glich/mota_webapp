@@ -2,22 +2,20 @@ import { MongoClient } from 'mongodb';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://mb278427_db_user:20062005@cluster0.ldrdbe5.mongodb.net/motopro_pos?retryWrites=true&w=majority';
 
-let cachedClient: MongoClient | null = null;
+// Global cache pattern for Vercel Serverless
+let cachedPromise: Promise<MongoClient> | null = (global as any)._mongoClientPromise || null;
 
 export async function getMongoClient(): Promise<MongoClient> {
-  if (cachedClient) {
-    return cachedClient;
+  if (!cachedPromise) {
+    const client = new MongoClient(MONGODB_URI, {
+      maxPoolSize: 5,
+      serverSelectionTimeoutMS: 8000,
+      connectTimeoutMS: 10000,
+    });
+    cachedPromise = client.connect();
+    (global as any)._mongoClientPromise = cachedPromise;
   }
-  const client = new MongoClient(MONGODB_URI, {
-    maxPoolSize: 5,
-    serverSelectionTimeoutMS: 5000,
-    connectTimeoutMS: 10000,
-    tls: true,
-    tlsAllowInvalidCertificates: false,
-  });
-  await client.connect();
-  cachedClient = client;
-  return cachedClient;
+  return cachedPromise;
 }
 
 export default async function handler(req: any, res: any) {
