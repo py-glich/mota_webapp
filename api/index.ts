@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://mb278427_db_user:20062005@cluster0.ldrdbe5.mongodb.net/motopro_pos?retryWrites=true&w=majority';
+const DIRECT_ATLAS_URI = 'mongodb://mb278427_db_user:20062005@ac-rbl53ga-shard-00-00.ldrdbe5.mongodb.net:27017,ac-rbl53ga-shard-00-01.ldrdbe5.mongodb.net:27017,ac-rbl53ga-shard-00-02.ldrdbe5.mongodb.net:27017/motopro_pos?ssl=true&replicaSet=atlas-12475z-shard-0&authSource=admin&retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI || DIRECT_ATLAS_URI;
 
 // Global cache pattern for Vercel Serverless
 let cachedPromise: Promise<MongoClient> | null = (global as any)._mongoClientPromise || null;
