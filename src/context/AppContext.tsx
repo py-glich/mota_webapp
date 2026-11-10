@@ -397,11 +397,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setProducts(prev => [newProduct, ...prev]);
     logAudit('Inventory', 'Product Created', `Added new product: ${newProduct.name} (SKU: ${newProduct.sku})`);
+
+    // Sync to Cloud MongoDB Atlas
+    fetch('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newProduct)
+    }).catch(err => console.warn('Cloud sync error on addProduct:', err));
   };
 
   const updateProduct = (updated: Product) => {
     setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
     logAudit('Inventory', 'Product Updated', `Updated product details: ${updated.name} (Sale Price: ${updated.salePrice})`);
+
+    // Sync to Cloud MongoDB Atlas (includes updated image, prices, details)
+    fetch(`/api/products/${updated.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated)
+    }).catch(err => console.warn('Cloud sync error on updateProduct:', err));
   };
 
   const archiveProduct = (id: string) => {
