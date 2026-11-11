@@ -115,10 +115,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const { currentUser, currentCounter, updateCounterCash } = useAuth();
 
   // ─── Automated Cache Buster: Discards stale cached records from earlier versions ───
-  const MOTOPRO_CACHE_VERSION = 'v4_bulletproof_images_20261107';
+  const MOTOPRO_CACHE_VERSION = 'v5_27products_real_images_20261111';
   try {
     if (typeof window !== 'undefined' && localStorage.getItem('motopro_cache_ver') !== MOTOPRO_CACHE_VERSION) {
       localStorage.removeItem('cyberorion_products');
+      localStorage.removeItem('cyberorion_categories');
       localStorage.removeItem('cyberorion_auth_user');
       localStorage.removeItem('cyberorion_users');
       localStorage.setItem('motopro_cache_ver', MOTOPRO_CACHE_VERSION);
