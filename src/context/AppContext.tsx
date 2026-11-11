@@ -65,6 +65,7 @@ interface AppContextType {
   // Sales & POS actions
   completeSalesInvoice: (invoice: Omit<SalesInvoice, 'id' | 'invoiceNumber' | 'createdAt'>) => SalesInvoice;
   updateSalesInvoiceGreeting: (invoiceId: string, greeting: string) => void;
+  updateSalesInvoiceUrduNote: (invoiceId: string, urduNote: string) => void;
   voidSalesInvoice: (invoiceId: string, reason: string) => { success: boolean; message: string };
 
   // Purchase actions
@@ -744,6 +745,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }).catch(err => console.warn('Cloud sync error on updateSalesInvoiceGreeting:', err));
   };
 
+  const updateSalesInvoiceUrduNote = (invoiceId: string, urduNote: string) => {
+    setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, urduNote } : inv));
+    logAudit('POS', 'Invoice Footer Note Updated', `Updated footer note for invoice ${invoiceId}: "${urduNote}"`);
+
+    // Sync to backend if supported
+    fetch(`/api/invoices/${invoiceId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urduNote })
+    }).catch(err => console.warn('Cloud sync error on updateSalesInvoiceUrduNote:', err));
+  };
+
   const voidSalesInvoice = (invoiceId: string, reason: string): { success: boolean; message: string } => {
     const inv = invoices.find(i => i.id === invoiceId);
     if (!inv) return { success: false, message: 'Invoice not found.' };
@@ -1408,6 +1421,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       recordDamagedStock,
       completeSalesInvoice,
       updateSalesInvoiceGreeting,
+    updateSalesInvoiceUrduNote,
       voidSalesInvoice,
       createPurchaseInvoice,
       processSalesReturn,

@@ -13,7 +13,7 @@ import { A4Invoice } from '../components/print/A4Invoice';
 import { getProductDisplayImage } from '../utils/imageUtils';
 
 export const PosPage: React.FC = () => {
-  const { products, customers, completeSalesInvoice, invoices, voidSalesInvoice, addCustomer, updateSalesInvoiceGreeting } = useApp();
+  const { products, customers, completeSalesInvoice, invoices, voidSalesInvoice, addCustomer, updateSalesInvoiceGreeting, updateSalesInvoiceUrduNote } = useApp();
   const { currentCounter, currentUser, hasPermission } = useAuth();
 
   // POS State
@@ -1049,6 +1049,10 @@ export const PosPage: React.FC = () => {
             updateSalesInvoiceGreeting(activeReceipt.id, newGreeting);
             setActiveReceipt(prev => prev ? { ...prev, greeting: newGreeting } : null);
           }}
+          onUpdateFooterNote={(newNote) => {
+            updateSalesInvoiceUrduNote(activeReceipt.id, newNote);
+            setActiveReceipt(prev => prev ? { ...prev, urduNote: newNote } : null);
+          }}
         />
       )}
 
@@ -1060,6 +1064,10 @@ export const PosPage: React.FC = () => {
           onUpdateGreeting={(newGreeting) => {
             updateSalesInvoiceGreeting(a4Receipt.id, newGreeting);
             setA4Receipt(prev => prev ? { ...prev, greeting: newGreeting } : null);
+          }}
+          onUpdateFooterNote={(newNote) => {
+            updateSalesInvoiceUrduNote(a4Receipt.id, newNote);
+            setA4Receipt(prev => prev ? { ...prev, urduNote: newNote } : null);
           }}
         />
       )}

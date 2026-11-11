@@ -7,13 +7,25 @@ interface ThermalReceiptProps {
   onClose: () => void;
   onPrintA4?: () => void;
   onUpdateGreeting?: (newGreeting: string) => void;
+  onUpdateFooterNote?: (newNote: string) => void;
 }
 
-export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose, onPrintA4, onUpdateGreeting }) => {
+export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose, onPrintA4, onUpdateGreeting, onUpdateFooterNote }) => {
   const [paperWidth, setPaperWidth] = useState<'80mm' | '58mm'>('80mm');
   const [language, setLanguage] = useState<'english' | 'urdu'>('urdu');
   const [greeting, setGreeting] = useState<string>(invoice.greeting || '');
   const [isEditingGreeting, setIsEditingGreeting] = useState<boolean>(false);
+  const [footerNote, setFooterNote] = useState<string>(
+    invoice.urduNote || 'خریداری کا شکریہ! برقی سامان کی واپسی یا تبدیلی نہیں ہوگی۔ سامان 3 دن کے اندر بل کے ساتھ تبدیل کیا جا سکتا ہے۔'
+  );
+  const [isEditingFooter, setIsEditingFooter] = useState<boolean>(false);
+
+  const saveFooterNote = () => {
+    setIsEditingFooter(false);
+    if (onUpdateFooterNote) {
+      onUpdateFooterNote(footerNote);
+    }
+  };
 
   const handlePrint = () => {
     window.print();
@@ -246,16 +258,59 @@ export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose
                 * {invoice.invoiceNumber} *
               </div>
 
-              {/* Bilingual Notice */}
-              {language === 'urdu' ? (
-                <div className="urdu-font text-[10px] leading-relaxed text-gray-800 font-medium">
-                  خریداری کا شکریہ! برقی سامان کی واپسی یا تبدیلی نہیں ہوگی۔ سامان 3 دن کے اندر بل کے ساتھ تبدیل کیا جا سکتا ہے۔
-                </div>
-              ) : (
-                <div className="text-[8.5px] leading-tight text-gray-600 font-sans">
-                  Thank you for visiting Cyberorion! Electrical components are non-returnable. Exchanges accepted within 3 days with original bill.
-                </div>
-              )}
+              {/* Bilingual Notice / Editable Footer */}
+              <div className="pt-1">
+                {isEditingFooter ? (
+                  <div className="space-y-1 bg-slate-50 border border-rose-400 p-1.5 rounded-lg">
+                    <textarea
+                      value={footerNote}
+                      onChange={e => setFooterNote(e.target.value)}
+                      rows={2}
+                      className="w-full text-[10px] font-sans p-1 border border-slate-300 rounded bg-white text-black focus:outline-none"
+                      placeholder="Enter footer terms or thank-you note..."
+                      autoFocus
+                    />
+                    <div className="flex justify-end gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingFooter(false)}
+                        className="px-2 py-0.5 bg-slate-200 text-slate-700 text-[9px] rounded font-semibold"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={saveFooterNote}
+                        className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[9px] rounded font-bold flex items-center gap-0.5"
+                      >
+                        <Check className="w-2.5 h-2.5" />
+                        <span>Save Note</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative group">
+                    {language === 'urdu' ? (
+                      <div className="urdu-font text-[10px] leading-relaxed text-gray-800 font-medium px-2">
+                        {footerNote}
+                      </div>
+                    ) : (
+                      <div className="text-[8.5px] leading-tight text-gray-600 font-sans px-2">
+                        {footerNote}
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingFooter(true)}
+                      className="no-print mt-1 inline-flex items-center gap-1 text-[9px] text-slate-400 hover:text-rose-600 px-2 py-0.5 rounded border border-transparent hover:border-slate-200 transition"
+                      title="Edit Footer Note / Policy"
+                    >
+                      <Edit2 className="w-2.5 h-2.5" />
+                      <span>Edit Notice / نوٹ تبدیل کریں</span>
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <p className="text-[8px] text-gray-500 font-sans">Powered by Cyberorion Motorcycle ERP</p>
             </div>

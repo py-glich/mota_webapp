@@ -6,11 +6,23 @@ interface A4InvoiceProps {
   invoice: SalesInvoice;
   onClose: () => void;
   onUpdateGreeting?: (newGreeting: string) => void;
+  onUpdateFooterNote?: (newNote: string) => void;
 }
 
-export const A4Invoice: React.FC<A4InvoiceProps> = ({ invoice, onClose, onUpdateGreeting }) => {
+export const A4Invoice: React.FC<A4InvoiceProps> = ({ invoice, onClose, onUpdateGreeting, onUpdateFooterNote }) => {
   const [greeting, setGreeting] = useState<string>(invoice.greeting || '');
   const [isEditingGreeting, setIsEditingGreeting] = useState<boolean>(false);
+  const [footerNote, setFooterNote] = useState<string>(
+    invoice.urduNote || 'برقی اجزاء اور قابل استعمال سامان واپس نہیں ہوگا۔ دیگر اشیاء اصل بل کے ساتھ ۳ دن کے اندر تبدیل کی جا سکتی ہیں۔'
+  );
+  const [isEditingFooter, setIsEditingFooter] = useState<boolean>(false);
+
+  const saveFooterNote = () => {
+    setIsEditingFooter(false);
+    if (onUpdateFooterNote) {
+      onUpdateFooterNote(footerNote);
+    }
+  };
 
   const handlePrint = () => {
     window.print();
@@ -382,18 +394,51 @@ export const A4Invoice: React.FC<A4InvoiceProps> = ({ invoice, onClose, onUpdate
             >
               خریداری کا شکریہ!
             </p>
-            <p
-              style={{
-                margin: '0',
-                fontSize: '9.5pt',
-                color: '#555',
-                direction: 'rtl',
-                fontFamily: "'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif",
-                lineHeight: '1.8',
-              }}
-            >
-              برقی اجزاء اور قابل استعمال سامان واپس نہیں ہوگا۔ دیگر اشیاء اصل بل کے ساتھ ۳ دن کے اندر تبدیل کی جا سکتی ہیں۔
-            </p>
+            {isEditingFooter ? (
+              <div style={{ margin: '6px 0', textAlign: 'center' }}>
+                <textarea
+                  value={footerNote}
+                  onChange={e => setFooterNote(e.target.value)}
+                  rows={2}
+                  style={{ width: '90%', fontSize: '9pt', padding: '4px 6px', border: '1px solid #0284c7', borderRadius: '4px', textAlign: 'right' }}
+                  autoFocus
+                />
+                <div style={{ marginTop: '4px' }}>
+                  <button
+                    type="button"
+                    onClick={saveFooterNote}
+                    style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '3px', padding: '3px 8px', fontSize: '8pt', cursor: 'pointer' }}
+                  >
+                    Save Footer Note
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <p
+                  style={{
+                    margin: '0',
+                    fontSize: '9.5pt',
+                    color: '#555',
+                    direction: 'rtl',
+                    fontFamily: "'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif",
+                    lineHeight: '1.8',
+                  }}
+                >
+                  {footerNote}
+                </p>
+                <div className="no-print" style={{ marginTop: '3px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingFooter(true)}
+                    style={{ background: 'none', border: 'none', color: '#888', fontSize: '8pt', cursor: 'pointer', padding: '0 4px' }}
+                    title="Edit terms and conditions"
+                  >
+                    ✏️ Edit Notice / نوٹس تبدیل کریں
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div style={{ borderTop: '1px dashed #ccc', margin: '8px 0' }} />
 
