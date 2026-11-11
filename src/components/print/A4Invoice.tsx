@@ -9,7 +9,7 @@ interface A4InvoiceProps {
 }
 
 export const A4Invoice: React.FC<A4InvoiceProps> = ({ invoice, onClose, onUpdateGreeting }) => {
-  const [greeting, setGreeting] = useState<string>(invoice.greeting || 'خوش آمدید / Welcome to MotoPro');
+  const [greeting, setGreeting] = useState<string>(invoice.greeting || '');
   const [isEditingGreeting, setIsEditingGreeting] = useState<boolean>(false);
 
   const handlePrint = () => {
@@ -127,46 +127,62 @@ export const A4Invoice: React.FC<A4InvoiceProps> = ({ invoice, onClose, onUpdate
                     <td style={{ color: '#555', paddingRight: '8px', paddingBottom: '3px', whiteSpace: 'nowrap' }}>Invoice No:</td>
                     <td style={{ fontWeight: 700, color: '#111' }}>{invoice.invoiceNumber}</td>
                   </tr>
-                  <tr>
-                    <td colSpan={2} style={{ padding: '4px 0 6px' }}>
-                      <div style={{ background: '#f0fdf4', border: '1px dashed #86efac', borderRadius: '4px', padding: '3px 6px', fontSize: '8.5pt' }}>
-                        {isEditingGreeting ? (
-                          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                            <input
-                              type="text"
-                              value={greeting}
-                              onChange={e => setGreeting(e.target.value)}
-                              style={{ width: '100%', fontSize: '8pt', padding: '2px 4px', border: '1px solid #16a34a', borderRadius: '3px' }}
-                              autoFocus
-                            />
-                            <button
-                              type="button"
-                              onClick={saveGreeting}
-                              style={{ background: '#16a34a', color: '#fff', border: 'none', borderRadius: '3px', padding: '2px 5px', cursor: 'pointer' }}
-                              title="Save Greeting"
-                            >
-                              <Check style={{ width: '10px', height: '10px' }} />
-                            </button>
-                          </div>
-                        ) : (
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontWeight: 700, fontStyle: 'italic', color: '#166534' }}>
-                              ✨ {greeting}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => setIsEditingGreeting(true)}
-                              className="no-print"
-                              style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', padding: '0 2px' }}
-                              title="Edit Greeting"
-                            >
-                              <Edit2 style={{ width: '10px', height: '10px' }} />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
+                  {(greeting || isEditingGreeting) ? (
+                    <tr>
+                      <td colSpan={2} style={{ padding: '4px 0 6px' }}>
+                        <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '4px', padding: '3px 6px', fontSize: '8.5pt' }}>
+                          {isEditingGreeting ? (
+                            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                              <input
+                                type="text"
+                                value={greeting}
+                                onChange={e => setGreeting(e.target.value)}
+                                placeholder="Enter custom note or greeting..."
+                                style={{ width: '100%', fontSize: '8pt', padding: '2px 4px', border: '1px solid #0284c7', borderRadius: '3px' }}
+                                autoFocus
+                              />
+                              <button
+                                type="button"
+                                onClick={saveGreeting}
+                                style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '3px', padding: '2px 5px', cursor: 'pointer' }}
+                                title="Save Message"
+                              >
+                                <Check style={{ width: '10px', height: '10px' }} />
+                              </button>
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontWeight: 700, fontStyle: 'italic', color: '#334155' }}>
+                                {greeting}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setIsEditingGreeting(true)}
+                                className="no-print"
+                                style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', padding: '0 2px' }}
+                                title="Edit Message"
+                              >
+                                <Edit2 style={{ width: '10px', height: '10px' }} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr className="no-print">
+                      <td colSpan={2} style={{ textAlign: 'right', padding: '2px 0 4px' }}>
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingGreeting(true)}
+                          style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '8pt', cursor: 'pointer', padding: 0 }}
+                          title="Add custom note/greeting"
+                        >
+                          + Add Note
+                        </button>
+                      </td>
+                    </tr>
+                  )}
                   <tr>
                     <td style={{ color: '#555', paddingRight: '8px', paddingBottom: '3px' }}>Date:</td>
                     <td style={{ fontWeight: 600 }}>{invoice.createdAt.split(' ')[0] || invoice.createdAt.split('T')[0]}</td>

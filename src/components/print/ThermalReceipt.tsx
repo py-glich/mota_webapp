@@ -12,7 +12,7 @@ interface ThermalReceiptProps {
 export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose, onPrintA4, onUpdateGreeting }) => {
   const [paperWidth, setPaperWidth] = useState<'80mm' | '58mm'>('80mm');
   const [language, setLanguage] = useState<'english' | 'urdu'>('urdu');
-  const [greeting, setGreeting] = useState<string>(invoice.greeting || 'خوش آمدید / Welcome to MotoPro');
+  const [greeting, setGreeting] = useState<string>(invoice.greeting || '');
   const [isEditingGreeting, setIsEditingGreeting] = useState<boolean>(false);
 
   const handlePrint = () => {
@@ -95,43 +95,57 @@ export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose
                 <span>Date: {invoice.createdAt.split(' ')[0]}</span>
               </div>
 
-              {/* Editable Greeting Right Below Invoice Number */}
-              <div className="py-1 px-1.5 my-1 bg-slate-50 border border-dotted border-slate-300 rounded text-center">
-                {isEditingGreeting ? (
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="text"
-                      value={greeting}
-                      onChange={e => setGreeting(e.target.value)}
-                      placeholder="Enter custom greeting message..."
-                      className="w-full text-[10px] font-bold text-center px-1 py-0.5 border border-rose-400 rounded bg-white text-black focus:outline-none"
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      onClick={saveGreeting}
-                      className="p-1 bg-emerald-600 text-white rounded hover:bg-emerald-500 transition shrink-0"
-                      title="Save Greeting"
-                    >
-                      <Check className="w-3 h-3" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between group">
-                    <span className="flex-1 font-bold italic text-slate-800 text-[10px] tracking-tight">
-                      ✨ {greeting}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setIsEditingGreeting(true)}
-                      className="no-print p-0.5 text-slate-400 hover:text-rose-600 transition"
-                      title="Edit Greeting Message"
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                )}
-              </div>
+              {/* Optional Custom Greeting Message */}
+              {(greeting || isEditingGreeting) ? (
+                <div className="py-1 px-1.5 my-1 bg-slate-50 border border-dotted border-slate-300 rounded text-center">
+                  {isEditingGreeting ? (
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="text"
+                        value={greeting}
+                        onChange={e => setGreeting(e.target.value)}
+                        placeholder="Enter custom note/greeting..."
+                        className="w-full text-[10px] font-bold text-center px-1 py-0.5 border border-rose-400 rounded bg-white text-black focus:outline-none"
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={saveGreeting}
+                        className="p-1 bg-emerald-600 text-white rounded hover:bg-emerald-500 transition shrink-0"
+                        title="Save Greeting"
+                      >
+                        <Check className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between group">
+                      <span className="flex-1 font-bold italic text-slate-800 text-[10px] tracking-tight">
+                        {greeting}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingGreeting(true)}
+                        className="no-print p-0.5 text-slate-400 hover:text-rose-600 transition"
+                        title="Edit Message"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="no-print flex justify-end my-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingGreeting(true)}
+                    className="text-[9px] text-slate-400 hover:text-rose-600 flex items-center gap-0.5 transition"
+                    title="Add custom greeting or note to receipt"
+                  >
+                    <Edit2 className="w-2.5 h-2.5" />
+                    <span>+ Add Note / Greeting</span>
+                  </button>
+                </div>
+              )}
 
               <div className="flex justify-between">
                 <span>Terminal: {invoice.counterName.split(' ')[0]}</span>
