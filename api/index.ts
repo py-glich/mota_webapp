@@ -129,6 +129,63 @@ export default async function handler(req: any, res: any) {
       }
     }
 
+    // CUSTOMERS ENDPOINTS: /api/customers
+    if (segments[0] === 'customers') {
+      const id = segments[1];
+
+      if (req.method === 'GET') {
+        const customers = await db.collection('customers').find({}).toArray();
+        return res.status(200).json(customers);
+      }
+
+      if (req.method === 'POST') {
+        const newCustomer = req.body;
+        if (!newCustomer.id) {
+          newCustomer.id = `CUST-${Date.now().toString().slice(-4)}`;
+        }
+        await db.collection('customers').insertOne(newCustomer);
+        return res.status(201).json({ success: true, customer: newCustomer });
+      }
+
+      if (req.method === 'PUT' && id) {
+        const updateData = req.body;
+        delete updateData._id;
+        await db.collection('customers').updateOne(
+          { id },
+          { $set: updateData },
+          { upsert: true }
+        );
+        return res.status(200).json({ success: true, customer: updateData });
+      }
+    }
+
+    // INVOICES ENDPOINTS: /api/invoices
+    if (segments[0] === 'invoices') {
+      const id = segments[1];
+
+      if (req.method === 'GET') {
+        const invoices = await db.collection('invoices').find({}).toArray();
+        return res.status(200).json(invoices);
+      }
+
+      if (req.method === 'POST') {
+        const newInv = req.body;
+        await db.collection('invoices').insertOne(newInv);
+        return res.status(201).json({ success: true, invoice: newInv });
+      }
+
+      if (req.method === 'PUT' && id) {
+        const updateData = req.body;
+        delete updateData._id;
+        await db.collection('invoices').updateOne(
+          { id },
+          { $set: updateData },
+          { upsert: true }
+        );
+        return res.status(200).json({ success: true, invoice: updateData });
+      }
+    }
+
     // AUTH / PROFILE ENDPOINT: /api/auth/profile
     if (segments[0] === 'auth' && segments[1] === 'profile') {
       if (req.method === 'PUT') {

@@ -308,9 +308,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       if (data.products && Array.isArray(data.products) && data.products.length > 0) setProducts(data.products);
       if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) setCategories(data.categories);
-      if (data.customers && Array.isArray(data.customers)) setCustomers(data.customers);
+      if (data.customers && Array.isArray(data.customers)) {
+        // Merge with local newly created customers so un-synced ones are not lost
+        setCustomers(prev => {
+          const cloudMap = new Map((data.customers as Customer[]).map(c => [c.id, c]));
+          const localOnly = prev.filter(c => !cloudMap.has(c.id));
+          return [...(data.customers as Customer[]), ...localOnly];
+        });
+      }
       if (data.suppliers && Array.isArray(data.suppliers)) setSuppliers(data.suppliers);
-      if (data.invoices && Array.isArray(data.invoices)) setInvoices(data.invoices);
+      if (data.invoices && Array.isArray(data.invoices)) {
+        setInvoices(prev => {
+          const cloudMap = new Map((data.invoices as SalesInvoice[]).map(i => [i.id, i]));
+          const localOnly = prev.filter(i => !cloudMap.has(i.id));
+          return [...(data.invoices as SalesInvoice[]), ...localOnly];
+        });
+      }
       if (data.purchases && Array.isArray(data.purchases)) setPurchases(data.purchases);
       if (data.expenses && Array.isArray(data.expenses)) setExpenses(data.expenses);
       if (data.cashbook && Array.isArray(data.cashbook)) setCashbook(data.cashbook);
@@ -709,6 +722,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     logAudit('POS', 'Invoice Generated', `Created ${invoiceNumber} for Rs. ${fullInvoice.grandTotal} (${fullInvoice.paymentMethod})`);
 
+    // Sync invoice to cloud database
+    fetch('/api/invoices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fullInvoice)
+    }).catch(err => console.warn('Cloud sync error for new invoice:', err));
+
     return fullInvoice;
   };
 
@@ -1083,7 +1103,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // 6. CUSTOMER MANAGEMENT
   const addCustomer = (c: Omit<Customer, 'id' | 'totalPurchases' | 'loyaltyPoints'>): Customer => {
-    const newId = `CUST-${String(customers.length + 1).padStart(3, '0')}`;
+    const newId = `CUST-${Date.now().toString().slice(-6)}`;
     const newCust: Customer = {
       ...c,
       id: newId,
@@ -1093,12 +1113,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setCustomers(prev => [...prev, newCust]);
     logAudit('Customers', 'Customer Added', `Registered customer: ${newCust.name} (${newCust.group})`);
+
+    // Sync to cloud database
+    fetch('/api/customers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newCust)
+    }).catch(err => console.warn('Cloud sync error for new customer:', err));
+
     return newCust;
   };
 
   const updateCustomer = (updated: Customer) => {
     setCustomers(prev => prev.map(c => c.id === updated.id ? updated : c));
     logAudit('Customers', 'Customer Updated', `Updated customer: ${updated.name}`);
+
+    // Sync to cloud database
+    fetch(`/api/customers/${updated.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated)
+    }).catch(err => console.warn('Cloud sync error for update customer:', err));
   };
 
   const recordCustomerPayment = (customerId: string, amount: number, paymentMethod: string, notes?: string) => {
