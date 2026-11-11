@@ -64,6 +64,7 @@ interface AppContextType {
 
   // Sales & POS actions
   completeSalesInvoice: (invoice: Omit<SalesInvoice, 'id' | 'invoiceNumber' | 'createdAt'>) => SalesInvoice;
+  updateSalesInvoiceGreeting: (invoiceId: string, greeting: string) => void;
   voidSalesInvoice: (invoiceId: string, reason: string) => { success: boolean; message: string };
 
   // Purchase actions
@@ -709,6 +710,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     logAudit('POS', 'Invoice Generated', `Created ${invoiceNumber} for Rs. ${fullInvoice.grandTotal} (${fullInvoice.paymentMethod})`);
 
     return fullInvoice;
+  };
+
+  const updateSalesInvoiceGreeting = (invoiceId: string, greeting: string) => {
+    setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, greeting } : inv));
+    logAudit('POS', 'Invoice Greeting Updated', `Updated greeting for invoice ${invoiceId}: "${greeting}"`);
+
+    // Sync to backend if supported
+    fetch(`/api/invoices/${invoiceId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ greeting })
+    }).catch(err => console.warn('Cloud sync error on updateSalesInvoiceGreeting:', err));
   };
 
   const voidSalesInvoice = (invoiceId: string, reason: string): { success: boolean; message: string } => {
@@ -1359,6 +1372,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       rejectStockAdjustment,
       recordDamagedStock,
       completeSalesInvoice,
+      updateSalesInvoiceGreeting,
       voidSalesInvoice,
       createPurchaseInvoice,
       processSalesReturn,

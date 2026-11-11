@@ -1,19 +1,29 @@
 import React, { useState } from 'react';
 import { SalesInvoice } from '../../types';
-import { Printer, Download, Globe, X, FileText } from 'lucide-react';
+import { Printer, Download, Globe, X, FileText, Edit2, Check } from 'lucide-react';
 
 interface ThermalReceiptProps {
   invoice: SalesInvoice;
   onClose: () => void;
   onPrintA4?: () => void;
+  onUpdateGreeting?: (newGreeting: string) => void;
 }
 
-export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose, onPrintA4 }) => {
+export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose, onPrintA4, onUpdateGreeting }) => {
   const [paperWidth, setPaperWidth] = useState<'80mm' | '58mm'>('80mm');
   const [language, setLanguage] = useState<'english' | 'urdu'>('urdu');
+  const [greeting, setGreeting] = useState<string>(invoice.greeting || 'خوش آمدید / Welcome to MotoPro');
+  const [isEditingGreeting, setIsEditingGreeting] = useState<boolean>(false);
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const saveGreeting = () => {
+    setIsEditingGreeting(false);
+    if (onUpdateGreeting) {
+      onUpdateGreeting(greeting);
+    }
   };
 
   return (
@@ -80,10 +90,49 @@ export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose
 
             {/* Metadata */}
             <div className="py-2 border-b border-dashed border-black space-y-0.5 text-[10px]">
-              <div className="flex justify-between">
-                <span>Inv: #{invoice.invoiceNumber}</span>
+              <div className="flex justify-between items-center">
+                <span className="font-bold">Inv: #{invoice.invoiceNumber}</span>
                 <span>Date: {invoice.createdAt.split(' ')[0]}</span>
               </div>
+
+              {/* Editable Greeting Right Below Invoice Number */}
+              <div className="py-1 px-1.5 my-1 bg-slate-50 border border-dotted border-slate-300 rounded text-center">
+                {isEditingGreeting ? (
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      value={greeting}
+                      onChange={e => setGreeting(e.target.value)}
+                      placeholder="Enter custom greeting message..."
+                      className="w-full text-[10px] font-bold text-center px-1 py-0.5 border border-rose-400 rounded bg-white text-black focus:outline-none"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={saveGreeting}
+                      className="p-1 bg-emerald-600 text-white rounded hover:bg-emerald-500 transition shrink-0"
+                      title="Save Greeting"
+                    >
+                      <Check className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between group">
+                    <span className="flex-1 font-bold italic text-slate-800 text-[10px] tracking-tight">
+                      ✨ {greeting}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingGreeting(true)}
+                      className="no-print p-0.5 text-slate-400 hover:text-rose-600 transition"
+                      title="Edit Greeting Message"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <div className="flex justify-between">
                 <span>Terminal: {invoice.counterName.split(' ')[0]}</span>
                 <span>Time: {invoice.createdAt.split(' ')[1] || '10:00'}</span>
@@ -94,7 +143,7 @@ export const ThermalReceipt: React.FC<ThermalReceiptProps> = ({ invoice, onClose
               </div>
               <div className="flex justify-between border-t border-dotted border-gray-400 pt-1 mt-1 font-bold">
                 <span>Customer:</span>
-                <span className="truncate max-w-[120px]">{invoice.customerName}</span>
+                <span className="truncate max-w-[140px]">{invoice.customerName} {invoice.customerPhone ? `(${invoice.customerPhone})` : ''}</span>
               </div>
             </div>
 

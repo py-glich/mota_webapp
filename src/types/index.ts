@@ -139,6 +139,7 @@ export interface SalesInvoice {
   voidedAt?: string;
   createdAt: string;
   urduNote?: string;
+  greeting?: string;
 }
 
 export interface PurchaseItem {
