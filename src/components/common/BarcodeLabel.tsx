@@ -63,11 +63,11 @@ export const BarcodeLabel: React.FC<BarcodeLabelProps> = ({ product, onClose }) 
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Dimensions based on preset
+  // Dimensions based on preset with exact aspect ratios & safe inner content padding
   const labelDimensions = {
-    '50x30': { width: '50mm', minHeight: '30mm', barWidth: 1.3, barHeight: 30 },
-    '38x25': { width: '38mm', minHeight: '25mm', barWidth: 1.0, barHeight: 22 },
-    '60x40': { width: '60mm', minHeight: '40mm', barWidth: 1.5, barHeight: 38 },
+    '50x30': { width: '50mm', minHeight: '34mm', barWidth: 1.25, barHeight: 28 },
+    '38x25': { width: '38mm', minHeight: '26mm', barWidth: 1.0, barHeight: 20 },
+    '60x40': { width: '60mm', minHeight: '42mm', barWidth: 1.45, barHeight: 34 },
   }[labelSize];
 
   return (
@@ -268,19 +268,22 @@ export const BarcodeLabel: React.FC<BarcodeLabelProps> = ({ product, onClose }) 
         </div>
 
         {/* Printable Grid Preview (Both Browser View and Print Target) */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-900/60 flex justify-center">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-5 bg-slate-950/80 flex justify-center items-start min-h-[300px]">
           <div
             id="barcode-printable-area"
-            className={`w-full max-w-3xl ${
+            className={`w-full max-w-3xl transition-all duration-150 ${
               paperMode === 'roll'
-                ? 'print-roll-mode flex flex-col items-center gap-3'
-                : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3 p-2 bg-white rounded-xl shadow-inner'
+                ? 'print-roll-mode flex flex-col items-center gap-3 p-4 bg-slate-900 border border-slate-800 rounded-xl'
+                : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-2.5 p-4 sm:p-6 bg-white rounded-xl shadow-2xl border border-slate-300'
             }`}
+            style={{
+              minHeight: paperMode === 'sheet' ? '420px' : 'auto'
+            }}
           >
             {Array.from({ length: copies }).map((_, index) => (
               <div
                 key={index}
-                className="barcode-sticker-card border border-dashed border-slate-400 p-2 text-center rounded-lg flex flex-col justify-between bg-white text-black shadow-xs mx-auto"
+                className="barcode-sticker-card border border-dashed border-slate-400 p-1.5 sm:p-2 text-center rounded-md flex flex-col justify-between bg-white text-black shadow-xs mx-auto overflow-hidden"
                 style={{
                   width: labelDimensions.width,
                   minHeight: labelDimensions.minHeight,
@@ -288,22 +291,22 @@ export const BarcodeLabel: React.FC<BarcodeLabelProps> = ({ product, onClose }) 
                 }}
               >
                 {/* Header */}
-                <div>
+                <div className="overflow-hidden">
                   {showShopName && (
-                    <div className="text-[8px] font-black uppercase tracking-wider text-slate-800 leading-tight">
+                    <div className="text-[8px] font-black uppercase tracking-wider text-slate-800 leading-tight truncate">
                       {shopName}
                     </div>
                   )}
-                  <div className="text-[9.5px] font-extrabold text-black leading-snug line-clamp-2 mt-0.5">
+                  <div className="text-[9px] sm:text-[9.5px] font-extrabold text-black leading-tight line-clamp-2 mt-0.5" title={product.name}>
                     {product.name}
                   </div>
-                  <div className="text-[7.5px] text-slate-600 font-mono mt-0.5">
+                  <div className="text-[7px] sm:text-[7.5px] text-slate-600 font-mono mt-0.5 truncate">
                     SKU: {product.sku} {showLocation && product.location?.rack ? `| Rack: ${product.location.rack}` : ''}
                   </div>
                 </div>
 
                 {/* Real Code 128 Barcode SVG */}
-                <div className="my-1 flex flex-col items-center justify-center bg-white">
+                <div className="my-0.5 flex flex-col items-center justify-center bg-white overflow-hidden max-w-full">
                   <RealBarcodeSvg
                     value={product.barcode}
                     width={labelDimensions.barWidth}
@@ -314,8 +317,8 @@ export const BarcodeLabel: React.FC<BarcodeLabelProps> = ({ product, onClose }) 
 
                 {/* Price Tag */}
                 {showPrice && (
-                  <div className="text-[10px] font-black text-black border-t border-slate-200 pt-0.5 flex items-center justify-between">
-                    <span className="text-[7.5px] text-slate-500 font-bold">MRP:</span>
+                  <div className="text-[9px] sm:text-[10px] font-black text-black border-t border-slate-200 pt-0.5 flex items-center justify-between">
+                    <span className="text-[7px] text-slate-500 font-bold">MRP:</span>
                     <span className="font-extrabold">Rs. {product.salePrice.toLocaleString()}</span>
                   </div>
                 )}
