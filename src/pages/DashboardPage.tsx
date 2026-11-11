@@ -55,9 +55,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
   return (
     <div className="p-3 sm:p-5 md:p-6 space-y-5 max-w-[1550px] mx-auto bg-[#0A0D14] text-slate-100 font-sans pb-24">
       {/* 1. TOP HERO SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {/* Left Hero Card with Red Superbike Background */}
-        <div className="lg:col-span-3 relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#111622] via-[#141926] to-[#1c151c] border border-[#1E2638] p-7 flex items-center min-h-[160px] shadow-xl">
+        <div className="lg:col-span-2 xl:col-span-3 relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#111622] via-[#141926] to-[#1c151c] border border-[#1E2638] p-7 flex items-center min-h-[160px] shadow-xl">
           {/* Background Motorcycle image with dark fade overlay */}
           <div 
             className="absolute right-0 top-0 bottom-0 w-2/3 md:w-1/2 bg-cover bg-center opacity-45 mix-blend-screen pointer-events-none"
@@ -94,7 +94,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
       </div>
 
       {/* 2. FOUR KPI STAT CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         {/* Card 1: Today's Sales */}
         <div className="bg-[#111622] hover:bg-[#151C2C] border border-[#1E2638] p-5 rounded-2xl shadow-lg transition duration-200 flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
@@ -169,7 +169,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
       </div>
 
       {/* 3. MIDDLE SECTION (3 Columns) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-5">
         {/* Col 1: Sales Overview Area Chart (5.5 cols) */}
         <div className="lg:col-span-6 bg-[#111622] border border-[#1E2638] rounded-2xl p-5 shadow-xl flex flex-col justify-between">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">

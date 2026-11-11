@@ -379,7 +379,7 @@ export const PosPage: React.FC = () => {
           </div>
 
           {/* Product Grid */}
-          <div className="flex-1 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 content-start pb-28">
+          <div className="flex-1 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 sm:gap-2.5 content-start pb-28">
             {filteredProducts.map((product, index) => {
               const inCart = cart.find(i => i.product.id === product.id);
               const isOutOfStock = product.currentStock <= 0;
@@ -484,7 +484,7 @@ export const PosPage: React.FC = () => {
         </div>
 
         {/* RIGHT: POS Bill & Fast Checkout Cart (40% on desktop, full on mobile when cart active) */}
-        <div className={`w-full lg:w-[440px] xl:w-[480px] bg-[#111622] flex flex-col min-h-full lg:h-full shadow-2xl z-10 border-t lg:border-t-0 border-[#1E2638] overflow-y-auto lg:overflow-visible pb-24 lg:pb-0 ${mobileTab === 'cart' ? 'flex' : 'hidden lg:flex'}`}>
+        <div className={`w-full lg:w-[380px] xl:w-[420px] 2xl:w-[460px] shrink-0 bg-[#111622] flex flex-col h-full shadow-2xl z-10 border-t lg:border-t-0 border-[#1E2638] overflow-hidden ${mobileTab === 'cart' ? 'flex' : 'hidden lg:flex'}`}>
           {/* Customer Selector & Quick Register */}
           <div className="p-3 bg-[#0E131E] border-b border-[#1E2638] space-y-2">
             <div className="flex items-center justify-between text-xs">
@@ -518,7 +518,7 @@ export const PosPage: React.FC = () => {
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
                   <div>
                     <label className="block text-[10px] text-slate-400 mb-0.5 font-semibold">Customer Name *</label>
                     <input
@@ -713,7 +713,7 @@ export const PosPage: React.FC = () => {
           </div>
 
           {/* Bill Summary & Payment Box */}
-          <div className="p-3 bg-[#0B0E14] border-t border-[#1E2638] space-y-2.5">
+          <div className="p-2.5 sm:p-3 bg-[#0B0E14] border-t border-[#1E2638] space-y-2 shrink-0">
             {/* Subtotal, Discount, Points */}
             <div className="space-y-1 text-xs">
               <div className="flex justify-between text-slate-400">
@@ -890,7 +890,7 @@ export const PosPage: React.FC = () => {
                 className="flex-1 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-extrabold text-xs sm:text-sm tracking-wide transition shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <CheckCircle className="w-4 h-4 shrink-0" />
-                <span>Complete Sale & Print Bill (Rs. {grandTotal.toLocaleString()})</span>
+                <span>Complete Sale (Rs. {grandTotal.toLocaleString()})</span>
               </button>
             </div>
           </div>

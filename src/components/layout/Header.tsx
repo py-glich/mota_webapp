@@ -22,7 +22,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenProfileM
   const [showDbModal, setShowDbModal] = useState(false);
 
   return (
-    <header className="h-16 bg-[#0B0E14] border-b border-[#1B2232] px-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 select-none gap-2 sm:gap-4">
+    <header className="h-14 sm:h-16 bg-[#0B0E14] border-b border-[#1B2232] px-2.5 sm:px-5 flex items-center justify-between sticky top-0 z-30 select-none gap-2 shrink-0">
       {/* Left: Hamburger (Mobile) + Global Search Input */}
       <div className="flex items-center gap-2 flex-1 max-w-xl">
         <button

@@ -66,3 +66,27 @@
   line-height: 1.8;
   letter-spacing: 0;
 }
+
+
+/* Enhanced Responsive Rules for 80%, 90%, 100% Zoom and Laptop Displays */
+@layer utilities {
+  /* Prevent flex/grid children from bursting out of containers */
+  .min-w-0 {
+    min-width: 0 !important;
+  }
+}
+
+/* Fluid responsive scroll containers */
+.responsive-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Modal backdrop responsive centering */
+.modal-responsive-wrapper {
+  max-height: 90vh;
+  max-height: 90dvh;
+  display: flex;
+  flex-direction: column;
+}
