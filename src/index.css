@@ -90,3 +90,29 @@
   display: flex;
   flex-direction: column;
 }
+
+
+/* Global Zoom Scaling & Safe Boundaries for 80%, 90%, 100%, 110%, 125% Zoom Levels */
+@layer base {
+  *, ::before, ::after {
+    box-sizing: border-box;
+  }
+  
+  img, svg, video, canvas, audio, iframe, embed, object {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Ensure modal backdrops always allow scrolling even when zoom is 125% or 100% on small screens */
+.fixed.inset-0 {
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+/* Ensure table containers never cause window blowout when zoomed in */
+.table-responsive-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}

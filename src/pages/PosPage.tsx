@@ -899,7 +899,7 @@ export const PosPage: React.FC = () => {
 
       {/* RECENT INVOICES & VOID MODAL */}
       {showRecentInvoices && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
           <div className="bg-[#111622] rounded-2xl shadow-2xl max-w-3xl w-full border border-[#1E2638] flex flex-col max-h-[85vh] overflow-hidden">
             <div className="p-4 border-b border-[#1E2638] flex items-center justify-between bg-[#0B0E14]">
               <div className="flex items-center gap-2">
@@ -986,7 +986,7 @@ export const PosPage: React.FC = () => {
 
       {/* VOID CONFIRMATION MODAL */}
       {voidModalInvoice && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
           <div className="bg-[#111622] rounded-2xl shadow-2xl max-w-md w-full border border-[#1E2638] p-5 space-y-4">
             <div className="flex items-center gap-2 text-rose-500">
               <ShieldAlert className="w-6 h-6" />

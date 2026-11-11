@@ -274,7 +274,7 @@ export const BarcodeLabel: React.FC<BarcodeLabelProps> = ({ product, onClose }) 
             className={`w-full max-w-3xl transition-all duration-150 ${
               paperMode === 'roll'
                 ? 'print-roll-mode flex flex-col items-center gap-3 p-4 bg-slate-900 border border-slate-800 rounded-xl'
-                : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-2.5 p-4 sm:p-6 bg-white rounded-xl shadow-2xl border border-slate-300'
+                : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 p-4 sm:p-6 bg-white rounded-xl shadow-2xl border border-slate-300 w-full'
             }`}
             style={{
               minHeight: paperMode === 'sheet' ? '420px' : 'auto'
