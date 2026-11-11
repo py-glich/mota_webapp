@@ -60,7 +60,7 @@ export const LoyaltyPage: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-6 overflow-y-auto max-w-7xl mx-auto pb-28">
+    <div className="p-4 md:p-6 space-y-6 overflow-y-auto w-full pb-28">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

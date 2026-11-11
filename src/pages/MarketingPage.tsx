@@ -311,7 +311,7 @@ export const MarketingPage: React.FC = () => {
       className="min-h-full bg-[#0A0D14] text-slate-100 p-3 sm:p-5 md:p-6 space-y-6 overflow-y-auto pb-28 font-sans"
       style={{ colorScheme: 'dark' }}
     >
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="w-full space-y-6">
         {/* Header with Tab Switcher */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>

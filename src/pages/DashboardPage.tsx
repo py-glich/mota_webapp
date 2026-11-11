@@ -53,7 +53,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ setActiveTab }) =>
   ];
 
   return (
-    <div className="p-3 sm:p-5 md:p-6 space-y-5 max-w-[1550px] mx-auto bg-[#0A0D14] text-slate-100 font-sans pb-24">
+    <div className="p-3 sm:p-5 md:p-6 space-y-5 w-full bg-[#0A0D14] text-slate-100 font-sans pb-24">
       {/* 1. TOP HERO SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {/* Left Hero Card with Red Superbike Background */}

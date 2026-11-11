@@ -40,7 +40,7 @@ export const PermissionsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-6 overflow-y-auto max-w-7xl mx-auto pb-28">
+    <div className="p-4 md:p-6 space-y-6 overflow-y-auto w-full pb-28">
       {/* Header */}
       <div>
         <h1 className="text-xl font-extrabold text-white flex items-center gap-2">

@@ -211,7 +211,7 @@ export const ReturnsPage: React.FC = () => {
   });
 
   return (
-    <div className="p-3 sm:p-5 md:p-6 space-y-6 max-w-7xl mx-auto pb-28 text-slate-100 font-sans">
+    <div className="p-3 sm:p-5 md:p-6 space-y-6 w-full pb-28 text-slate-100 font-sans">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

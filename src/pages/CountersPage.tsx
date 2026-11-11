@@ -53,7 +53,7 @@ export const CountersPage: React.FC = () => {
   };
 
   return (
-    <div className="p-3 sm:p-5 md:p-6 space-y-6 max-w-7xl mx-auto pb-24">
+    <div className="p-3 sm:p-5 md:p-6 space-y-6 w-full pb-24">
       {/* Header */}
       <div>
         <h1 className="text-xl font-extrabold text-white flex items-center gap-2">

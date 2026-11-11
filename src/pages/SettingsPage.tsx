@@ -962,7 +962,7 @@ export const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-3 sm:p-5 md:p-6 max-w-5xl mx-auto pb-28 space-y-5">
+    <div className="p-3 sm:p-5 md:p-6 w-full pb-28 space-y-5">
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
